@@ -788,3 +788,16 @@ textarea { resize: vertical; min-height: 80px; }
 .sv-form-group label { display: block; font-size: 12px; font-weight: 600; color: #2c3e50; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
 .sv-required { color: #C0392B; }
 .sv-form-actions { display: flex; gap: 10px; align-items: center; }
+
+
+
+.sv-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+.sv-pagination-info {
+    font-size: 13px;
+    color: #7f8c8d;
+}

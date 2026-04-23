@@ -68,7 +68,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="inv : ${invoices}">
+                    <tr th:each="inv : ${invoices.content}">
                         <td>
                             <span class="sv-invoice-number" th:text="${inv.number}"></span>
                         </td>
@@ -107,6 +107,7 @@
                         <td colspan="7" class="sv-empty">Aucune facture trouvée.</td>
                     </tr>
                 </tbody>
+                
             </table>
         </div>
 

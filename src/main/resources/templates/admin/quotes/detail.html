@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block th:replace="~{fragments/sidebar :: head('Devis')}"></th:block>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar('quotes')}"></div>
+
+<div class="main-content" id="mainContent">
+    <div class="topbar">
+        <span class="topbar-title" th:text="${quote.number} + ' — ' + ${quote.designation}"></span>
+        <div class="topbar-actions">
+            <a th:href="@{/admin/quotes}" class="btn btn-secondary btn-sm">← Retour</a>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <!-- En-tête devis -->
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+                <div>
+                    <h2 style="margin:0;" th:text="${quote.number}"></h2>
+                    <p style="color:#7f8c8d;margin:4px 0 0;" th:text="'Créé le ' + ${#temporals.format(quote.createdAt, 'dd/MM/yyyy')}"></p>
+                </div>
+                <span th:if="${quote.status == 'DRAFT'}"    class="badge" style="background:#f0f0f0;color:#666;font-size:13px;padding:6px 14px;">BROUILLON</span>
+                <span th:if="${quote.status == 'SENT'}"     class="badge badge-invoiced" style="font-size:13px;padding:6px 14px;">ENVOYÉ</span>
+                <span th:if="${quote.status == 'ACCEPTED'}" class="badge badge-paid" style="font-size:13px;padding:6px 14px;">ACCEPTÉ</span>
+                <span th:if="${quote.status == 'REFUSED'}"  class="badge" style="background:#fdecea;color:#c0392b;font-size:13px;padding:6px 14px;">REFUSÉ</span>
+            </div>
+
+            <!-- Infos client -->
+            <div class="info-grid-2">
+                <div class="info-box">
+                    <div class="info-label">Client</div>
+                    <p style="font-weight:bold;" th:text="${quote.customer.name}"></p>
+                    <p th:text="${quote.customer.corporateName}"></p>
+                    <p th:text="${quote.customer.address}"></p>
+                    <p th:text="${quote.customer.zipcode} + ' ' + ${quote.customer.city}"></p>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">Dates</div>
+                    <p th:text="'Créé le : ' + ${#temporals.format(quote.createdAt, 'dd/MM/yyyy')}"></p>
+                    <p th:if="${quote.sentAt != null}"
+                       th:text="'Envoyé le : ' + ${#temporals.format(quote.sentAt, 'dd/MM/yyyy')}"></p>
+                    <p th:if="${quote.sentAt == null}" style="color:#bbb;">Envoyé : —</p>
+                </div>
+            </div>
+
+            <!-- Boutons actions état -->
+            <div class="actions" style="margin-bottom:20px;">
+                <form th:if="${quote.status == 'DRAFT'}"
+                      th:action="@{/admin/quotes/{id}/send(id=${quote.id})}" method="post">
+                    <button type="submit" class="btn btn-info">📤 Marquer comme ENVOYÉ</button>
+                </form>
+                <form th:if="${quote.status == 'SENT'}"
+                      th:action="@{/admin/quotes/{id}/accept(id=${quote.id})}" method="post">
+                    <button type="submit" class="btn btn-success">✅ Accepter</button>
+                </form>
+                <form th:if="${quote.status == 'SENT'}"
+                      th:action="@{/admin/quotes/{id}/refuse(id=${quote.id})}" method="post">
+                    <button type="submit" class="btn btn-danger">❌ Refuser</button>
+                </form>
+                <!-- Bouton conversion en facture -->
+                <form th:if="${quote.status == 'ACCEPTED'}"
+                      th:action="@{/admin/quotes/{id}/convert(id=${quote.id})}" method="post"
+                      onsubmit="return confirm('Convertir ce devis en facture ?')">
+                    <button type="submit" class="btn btn-primary">🧾 Convertir en facture</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lignes du devis -->
+        <div class="card">
+            <h3 style="color:#2c3e50;margin-bottom:16px;">Lignes du devis</h3>
+            <div class="table-wrapper" style="margin-bottom:20px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Catégorie</th>
+                            <th>Prix unitaire HT</th>
+                            <th>Quantité</th>
+                            <th>Montant HT</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="row : ${quote.rows}">
+                            <td th:text="${row.product.designation}"></td>
+                            <td><span class="badge badge-category" th:text="${row.product.category}"></span></td>
+                            <td th:text="${#numbers.formatDecimal(row.product.unitPrice, 1, 2)} + ' €'"></td>
+                            <td th:text="${row.quantity}"></td>
+                            <td th:text="${#numbers.formatDecimal(row.amount(), 1, 2)} + ' €'"></td>
+                            <td>
+                                <form th:if="${quote.status == 'DRAFT'}"
+                                      th:action="@{/admin/quotes/{id}/delete-row/{rowId}(id=${quote.id},rowId=${row.id})}"
+                                      method="post">
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Supprimer cette ligne ?')">✕</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(quote.rows)}">
+                            <td colspan="6" class="empty-state">Aucune ligne. Ajoutez des produits ci-dessous.</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="4" style="text-align:right;">TOTAL HT</td>
+                            <td th:text="${#numbers.formatDecimal(quote.total(), 1, 2)} + ' €'"></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Ajout ligne — seulement si BROUILLON -->
+            <div th:if="${quote.status == 'DRAFT'}">
+                <hr class="section-divider"/>
+                <p style="font-size:13px;font-weight:bold;color:#2c3e50;margin-bottom:12px;">Ajouter une ligne :</p>
+                <form th:action="@{/admin/quotes/{id}/add-row(id=${quote.id})}" method="post" class="filter-bar" style="margin-bottom:0;">
+                    <div class="form-group">
+                        <select name="productId" required title="product">
+                            <option value="">-- Produit --</option>
+                            <option th:each="p : ${products}"
+                                    th:value="${p.id}"
+                                    th:text="${p.designation} + ' (' + ${p.unitPrice} + ' €)'">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:0;min-width:140px;">
+                        <input type="number" name="quantity" step="0.5" min="0.5" placeholder="Quantité" required/>
+                    </div>
+                    <div class="form-group" style="flex:0;">
+                        <button type="submit" class="btn btn-success">+ Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

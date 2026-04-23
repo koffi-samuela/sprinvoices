@@ -5,6 +5,8 @@ import com.example.sprinvoices.models.InvoiceRow;
 import com.example.sprinvoices.models.Product;
 import com.example.sprinvoices.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -91,10 +93,11 @@ public Invoice create(Invoice invoice) {
         invoiceRepository.deleteById(id);
     }
 
-    public List<Invoice> findWithFilters(Long customerId, String status) {
-    // Si les deux filtres sont vides on retourne tout
-    String statusParam = (status != null && !status.isEmpty()) ? status : null;
+    public Page<Invoice> findWithFilters(Long customerId, String status, Pageable pageable) {
+
     Long customerParam = (customerId != null && customerId != 0) ? customerId : null;
-    return invoiceRepository.findWithFilters(customerParam, statusParam);
+    String statusParam = (status != null && !status.isEmpty()) ? status : null;
+
+    return invoiceRepository.findWithFilters(customerParam, statusParam, pageable);
 }
 }

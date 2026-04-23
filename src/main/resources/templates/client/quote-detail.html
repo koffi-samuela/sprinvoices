@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block th:replace="~{fragments/sidebar-client :: head('Devis')}"></th:block>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar-client :: sidebar('quotes')}"></div>
+
+<div class="main-content" id="mainContent">
+    <div class="topbar">
+        <span class="topbar-title" th:text="${quote.number}"></span>
+        <div class="topbar-actions">
+            <a th:href="@{/client/quotes}" class="btn btn-secondary btn-sm">← Retour</a>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="invoice-preview">
+
+            <!-- En-tête -->
+            <div class="invoice-header-block">
+                <div>
+                    <div style="font-size:26px;font-weight:bold;color:#2c3e50;">SprinVoices</div>
+                    <div style="color:#7f8c8d;font-size:13px;margin-top:4px;">Module de facturation</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:20px;font-weight:bold;color:#8e44ad;" th:text="'DEVIS ' + ${quote.number}"></div>
+                    <div style="font-size:13px;color:#7f8c8d;margin-top:4px;" th:text="${quote.designation}"></div>
+                    <span th:if="${quote.status == 'DRAFT'}"    class="badge" style="background:#f0f0f0;color:#666;">BROUILLON</span>
+                    <span th:if="${quote.status == 'SENT'}"     class="badge badge-invoiced">EN ATTENTE DE RÉPONSE</span>
+                    <span th:if="${quote.status == 'ACCEPTED'}" class="badge badge-paid">ACCEPTÉ</span>
+                    <span th:if="${quote.status == 'REFUSED'}"  class="badge" style="background:#fdecea;color:#c0392b;">REFUSÉ</span>
+                </div>
+            </div>
+
+            <!-- Infos -->
+            <div class="info-grid-2">
+                <div class="info-box">
+                    <div class="info-label">Destinataire</div>
+                    <p style="font-weight:bold;" th:text="${quote.customer.name}"></p>
+                    <p th:text="${quote.customer.corporateName}"></p>
+                    <p th:text="${quote.customer.address}"></p>
+                    <p th:text="${quote.customer.zipcode} + ' ' + ${quote.customer.city}"></p>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">Dates</div>
+                    <p th:text="'Créé le : ' + ${#temporals.format(quote.createdAt, 'dd/MM/yyyy')}"></p>
+                    <p th:if="${quote.sentAt != null}"
+                       th:text="'Envoyé le : ' + ${#temporals.format(quote.sentAt, 'dd/MM/yyyy')}"></p>
+                </div>
+            </div>
+
+            <!-- Lignes -->
+            <div class="table-wrapper" style="margin-bottom:20px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Désignation</th>
+                            <th>Catégorie</th>
+                            <th>Prix unitaire HT</th>
+                            <th>Quantité</th>
+                            <th>Montant HT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="row : ${quote.rows}">
+                            <td th:text="${row.product.designation}"></td>
+                            <td><span class="badge badge-category" th:text="${row.product.category}"></span></td>
+                            <td th:text="${#numbers.formatDecimal(row.product.unitPrice, 1, 2)} + ' €'"></td>
+                            <td th:text="${row.quantity}"></td>
+                            <td th:text="${#numbers.formatDecimal(row.amount(), 1, 2)} + ' €'"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(quote.rows)}">
+                            <td colspan="5" class="empty-state">Aucune ligne sur ce devis.</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="4" style="text-align:right;">TOTAL HT</td>
+                            <td th:text="${#numbers.formatDecimal(quote.total(), 1, 2)} + ' €'"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Actions client : accepter ou refuser -->
+            <div th:if="${quote.status == 'SENT'}"
+                 style="display:flex;gap:12px;padding-top:20px;border-top:1px solid #f0f2f5;">
+                <form th:action="@{/client/quotes/{id}/accept(id=${quote.id})}" method="post">
+                    <button type="submit" class="btn btn-success"
+                            onclick="return confirm('Accepter ce devis ?')">✅ Accepter le devis</button>
+                </form>
+                <form th:action="@{/client/quotes/{id}/refuse(id=${quote.id})}" method="post">
+                    <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('Refuser ce devis ?')">❌ Refuser le devis</button>
+                </form>
+            </div>
+
+            <!-- Message si accepté -->
+            <div th:if="${quote.status == 'ACCEPTED'}"
+                 style="padding:16px;background:#eafaf1;border-radius:8px;margin-top:20px;color:#1e8449;">
+                ✅ Vous avez accepté ce devis. Une facture sera générée prochainement.
+            </div>
+
+            <!-- Message si refusé -->
+            <div th:if="${quote.status == 'REFUSED'}"
+                 style="padding:16px;background:#fdecea;border-radius:8px;margin-top:20px;color:#c0392b;">
+                ❌ Vous avez refusé ce devis.
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -23,6 +23,12 @@
             <i class="bi bi-file-earmark-text nav-icon"></i>
             <span class="nav-label">Mes factures</span>
         </a>
+        <a th:href="@{/client/quotes}"
+   th:classappend="${activePage == 'quotes'} ? ' active'"
+   class="nav-item">
+    <i class="bi bi-receipt nav-icon"></i>
+    <span class="nav-label">Mes devis</span>
+</a>
 
         <div class="nav-section-title">Compte</div>
 

@@ -3,14 +3,19 @@ package com.example.sprinvoices.controller;
 import com.example.sprinvoices.models.Customer;
 import com.example.sprinvoices.models.Invoice;
 import com.example.sprinvoices.models.Product;
+import com.example.sprinvoices.models.Quote;
 import com.example.sprinvoices.service.CustomerService;
 import com.example.sprinvoices.service.InvoiceService;
 import com.example.sprinvoices.service.ProductService;
+import com.example.sprinvoices.service.QuoteService;
 
 import java.util.List;
 // import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +28,7 @@ public class AdminController {
     @Autowired private CustomerService customerService;
     @Autowired private ProductService productService;
     @Autowired private InvoiceService invoiceService;
+    @Autowired private QuoteService quoteService;
 
     // ── Dashboard ────────────────────────────────────────────
 @GetMapping("/dashboard")
@@ -162,13 +168,29 @@ public String createCustomer(@ModelAttribute Customer customer,
     // FACTURES
     // ══════════════════════════════════════════════════════════
 @GetMapping("/invoices")
-public String invoices(@RequestParam(required = false) Long customerId,
-                        @RequestParam(required = false) String status,
-                        Model model) {
-    model.addAttribute("invoices", invoiceService.findWithFilters(customerId, status));
+public String invoices(
+        @RequestParam(required = false) Long customerId,
+        @RequestParam(required = false) String status,
+        @RequestParam(defaultValue = "0") int page,
+        Model model) {
+
+    Pageable pageable = PageRequest.of(page, 10);
+
+    Page<Invoice> invoices = invoiceService.findWithFilters(
+            customerId,
+            status,
+            pageable
+    );
+
+    model.addAttribute("invoices", invoices);
     model.addAttribute("customers", customerService.findAll());
+
     model.addAttribute("selectedCustomer", customerId);
     model.addAttribute("selectedStatus", status);
+
+    model.addAttribute("currentPage", page);
+    model.addAttribute("totalPages", invoices.getTotalPages());
+
     return "admin/invoices/list";
 }
 
@@ -225,4 +247,82 @@ public String invoices(@RequestParam(required = false) Long customerId,
         invoiceService.delete(id);
         return "redirect:/admin/invoices";
     }
+
+    // ══════════════════════════════════════════════════════════
+// DEVIS
+// ══════════════════════════════════════════════════════════
+@GetMapping("/quotes")
+public String quotes(Model model) {
+    model.addAttribute("quotes", quoteService.findAll());
+    return "admin/quotes/list";
 }
+
+@GetMapping("/quotes/new")
+public String newQuoteForm(Model model) {
+    model.addAttribute("quote", new Quote());
+    model.addAttribute("customers", customerService.findAll());
+    return "admin/quotes/form";
+}
+
+@PostMapping("/quotes/new")
+public String createQuote(@RequestParam String designation,
+                           @RequestParam Long customerId) {
+    Quote quote = new Quote();
+    quote.setDesignation(designation);
+    quote.setCustomer(customerService.findById(customerId));
+    Quote saved = quoteService.create(quote);
+    return "redirect:/admin/quotes/" + saved.getId();
+}
+
+@GetMapping("/quotes/{id}")
+public String quoteDetail(@PathVariable Long id, Model model) {
+    model.addAttribute("quote", quoteService.findById(id));
+    model.addAttribute("products", productService.findAll());
+    return "admin/quotes/detail";
+}
+
+@PostMapping("/quotes/{id}/add-row")
+public String addQuoteRow(@PathVariable Long id,
+                           @RequestParam Long productId,
+                           @RequestParam double quantity) {
+    quoteService.addRow(id, productService.findById(productId), quantity);
+    return "redirect:/admin/quotes/" + id;
+}
+
+@PostMapping("/quotes/{id}/delete-row/{rowId}")
+public String deleteQuoteRow(@PathVariable Long id, @PathVariable Long rowId) {
+    quoteService.deleteRow(id, rowId);
+    return "redirect:/admin/quotes/" + id;
+}
+
+@PostMapping("/quotes/{id}/send")
+public String sendQuote(@PathVariable Long id) {
+    quoteService.markAsSent(id);
+    return "redirect:/admin/quotes/" + id;
+}
+
+@PostMapping("/quotes/{id}/accept")
+public String acceptQuote(@PathVariable Long id) {
+    quoteService.markAsAccepted(id);
+    return "redirect:/admin/quotes/" + id;
+}
+
+@PostMapping("/quotes/{id}/refuse")
+public String refuseQuote(@PathVariable Long id) {
+    quoteService.markAsRefused(id);
+    return "redirect:/admin/quotes/" + id;
+}
+
+@PostMapping("/quotes/{id}/convert")
+public String convertQuote(@PathVariable Long id) {
+    Invoice invoice = quoteService.convertToInvoice(id);
+    return "redirect:/admin/invoices/" + invoice.getId();
+}
+
+@PostMapping("/quotes/delete/{id}")
+public String deleteQuote(@PathVariable Long id) {
+    quoteService.delete(id);
+    return "redirect:/admin/quotes";
+}
+}
+

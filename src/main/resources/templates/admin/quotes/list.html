@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block th:replace="~{fragments/sidebar :: head('Devis')}"></th:block>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar('quotes')}"></div>
+
+<div class="main-content" id="mainContent">
+    <div class="topbar">
+        <span class="topbar-title">Gestion des devis</span>
+        <div class="topbar-actions">
+            <a th:href="@{/admin/quotes/new}" class="btn btn-primary">+ Nouveau devis</a>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Numéro</th>
+                        <th>Désignation</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th>État</th>
+                        <th>Total HT</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="q : ${quotes}">
+                        <td style="font-weight:600; color:#8e44ad;" th:text="${q.number}"></td>
+                        <td th:text="${q.designation}"></td>
+                        <td th:text="${q.customer.name}"></td>
+                        <td th:text="${#temporals.format(q.createdAt, 'dd/MM/yyyy')}"></td>
+                        <td>
+                            <span th:if="${q.status == 'DRAFT'}"    class="badge" style="background:#f0f0f0;color:#666;">BROUILLON</span>
+                            <span th:if="${q.status == 'SENT'}"     class="badge badge-invoiced">ENVOYÉ</span>
+                            <span th:if="${q.status == 'ACCEPTED'}" class="badge badge-paid">ACCEPTÉ</span>
+                            <span th:if="${q.status == 'REFUSED'}"  class="badge" style="background:#fdecea;color:#c0392b;">REFUSÉ</span>
+                        </td>
+                        <td th:text="${#numbers.formatDecimal(q.total(), 1, 2)} + ' €'"></td>
+                        <td>
+                            <div class="actions">
+                                <a th:href="@{/admin/quotes/{id}(id=${q.id})}" class="btn btn-info btn-sm">Détail</a>
+                                <form th:action="@{/admin/quotes/delete/{id}(id=${q.id})}" method="post"
+                                      onsubmit="return confirm('Supprimer ce devis ?')">
+                                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(quotes)}">
+                        <td colspan="7" class="empty-state">Aucun devis enregistré.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

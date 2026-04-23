@@ -107,5 +107,81 @@ private void sendHtmlEmailWithPdf(String to, String subject, String htmlBody, In
             );
     }
     
-    
+    // ── Devis ────────────────────────────────────────────────────
+@Async
+public void sendQuoteSentNotification(com.example.sprinvoices.models.Quote quote) {
+    String email = quote.getCustomer().getUserAccount().getUsername();
+    String subject = "Votre devis " + quote.getNumber() + " est disponible";
+    String body = buildQuoteSentEmail(quote);
+    sendHtmlEmail(email, subject, body);
+}
+
+@Async
+public void sendQuoteConvertedNotification(com.example.sprinvoices.models.Quote quote) {
+    String email = quote.getCustomer().getUserAccount().getUsername();
+    String subject = "Votre devis " + quote.getNumber() + " a été converti en facture";
+    String body = buildQuoteConvertedEmail(quote);
+    sendHtmlEmail(email, subject, body);
+}
+
+// Méthode email simple sans pièce jointe (pour les devis)
+private void sendHtmlEmail(String to, String subject, String htmlBody) {
+    try {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlBody, true);
+        mailSender.send(message);
+    } catch (Exception e) {
+        System.err.println("Erreur envoi email : " + e.getMessage());
+    }
+}
+
+private String buildQuoteSentEmail(com.example.sprinvoices.models.Quote quote) {
+    return """
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
+            <div style="background:#8e44ad;padding:24px;border-radius:8px 8px 0 0;">
+                <h1 style="color:white;margin:0;font-size:22px;">SprinVoices</h1>
+            </div>
+            <div style="background:white;padding:32px;border:1px solid #eee;">
+                <h2 style="color:#2c3e50;">📋 Votre devis est disponible</h2>
+                <p style="color:#555;">Bonjour <strong>%s</strong>,</p>
+                <p style="color:#555;">Votre devis <strong>%s</strong> d'un montant de <strong>%.2f €</strong> HT est disponible.</p>
+                <div style="background:#f8f9fa;padding:16px;border-radius:6px;margin:24px 0;">
+                    <p style="margin:0;color:#555;">Connectez-vous à votre espace client pour le consulter et l'accepter ou le refuser.</p>
+                </div>
+            </div>
+            <div style="background:#f8f9fa;padding:16px;text-align:center;border-radius:0 0 8px 8px;">
+                <p style="color:#999;font-size:12px;margin:0;">SprinVoices — Module de facturation</p>
+            </div>
+        </div>
+        """.formatted(
+            quote.getCustomer().getName(),
+            quote.getNumber(),
+            quote.total()
+        );
+}
+
+private String buildQuoteConvertedEmail(com.example.sprinvoices.models.Quote quote) {
+    return """
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
+            <div style="background:#2980b9;padding:24px;border-radius:8px 8px 0 0;">
+                <h1 style="color:white;margin:0;font-size:22px;">SprinVoices</h1>
+            </div>
+            <div style="background:white;padding:32px;border:1px solid #eee;">
+                <h2 style="color:#2c3e50;">🧾 Votre devis a été converti en facture</h2>
+                <p style="color:#555;">Bonjour <strong>%s</strong>,</p>
+                <p style="color:#555;">Votre devis <strong>%s</strong> a été accepté et converti en facture.</p>
+                <p style="color:#555;">Connectez-vous à votre espace client pour consulter votre facture.</p>
+            </div>
+            <div style="background:#f8f9fa;padding:16px;text-align:center;border-radius:0 0 8px 8px;">
+                <p style="color:#999;font-size:12px;margin:0;">SprinVoices — Module de facturation</p>
+            </div>
+        </div>
+        """.formatted(
+            quote.getCustomer().getName(),
+            quote.getNumber()
+        );
+}
 }
