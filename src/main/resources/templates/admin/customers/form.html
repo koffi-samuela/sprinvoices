@@ -1,105 +1,142 @@
-<!doctype html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <th:block th:replace="~{fragments/sidebar :: head('Clients')}"></th:block>
-  </head>
-  <body>
-    <div th:replace="~{fragments/sidebar :: sidebar('customers')}"></div>
-    <div class="main-content" id="mainContent">
-      <div class="topbar">
-        <span class="topbar-title"  th:text="${customer.id == null ? 'Nouveau client' : 'Modifier le client'}"></span>
-      </div>
-      <div class="page-content">
-        <!-- contenu existant ici -->
-        <div class="card">
-          <!-- <h2
-            th:text="${customer.id == null ? 'Nouveau client' : 'Modifier le client'}"
-          ></h2> -->
-          <div th:if="${error}" class="alert alert-danger">
-    <span th:text="${error}"></span>
-</div>
-          <form
-            th:action="${customer.id == null ? '/admin/customers/new' : '/admin/customers/edit/' + customer.id}"
-            th:object="${customer}"
-            method="post"
-          >
-            <div class="section-title">Informations client</div>
+</head>
+<body>
 
-            <div class="form-group">
-              <label>Nom *</label>
-              <input
-                type="text"
-                th:field="*{name}"
-                placeholder="Nom du contact"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label>Raison sociale</label>
-              <input
-                type="text"
-                th:field="*{corporateName}"
-                placeholder="Nom de l'entreprise"
-              />
-            </div>
-            <div class="form-group">
-              <label>Adresse</label>
-              <input type="text" th:field="*{address}" placeholder="Adresse" />
-            </div>
-            <div style="display: flex; gap: 12px">
-              <div class="form-group" style="flex: 1">
-                <label>Code postal</label>
-                <input type="text" th:field="*{zipcode}" placeholder="75001" />
-              </div>
-              <div class="form-group" style="flex: 2">
-                <label>Ville</label>
-                <input type="text" th:field="*{city}" placeholder="Paris" />
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Délai de paiement (jours)</label>
-              <input
-                type="number"
-                th:field="*{delay}"
-                min="0"
-                placeholder="30"
-              />
-            </div>
+<div th:replace="~{fragments/sidebar :: sidebar('customers')}"></div>
 
-            <!-- Compte utilisateur uniquement à la création -->
-            <div th:if="${customer.id == null}">
-              <hr class="separator" />
-              <div class="section-title">Compte utilisateur</div>
-              <div class="form-group">
-                <label>Identifiant *</label>
-                <input
-                  type="text"
-                  name="username"
-                  placeholder="identifiant de connexion"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label>Mot de passe *</label>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="mot de passe"
-                  required
-                />
-              </div>
-            </div>
-
-            <div style="margin-top: 24px">
-              <button type="submit" class="btn btn-primary">Enregistrer</button>
-              <a th:href="@{/admin/customers}" class="btn btn-secondary"
-                >Annuler</a
-              >
-            </div>
-          </form>
+<div class="main-content" id="mainContent">
+    <div class="topbar">
+        <div class="d-flex align-items-center gap-3">
+            <a th:href="@{/admin/customers}" class="sv-back-btn">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <span class="topbar-title"
+                  th:text="${customer.id == null ? 'Nouveau client' : 'Modifier le client'}">
+            </span>
         </div>
-      </div>
     </div>
-  </body>
+
+    <div class="page-content">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="sv-form-card">
+
+                    <div th:if="${error}" class="sv-alert sv-alert-error mb-4">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <span th:text="${error}"></span>
+                    </div>
+
+                    <form th:action="${customer.id == null ? '/admin/customers/new' : '/admin/customers/edit/' + customer.id}"
+                          th:object="${customer}"
+                          method="post">
+
+                        <!-- Infos client -->
+                        <div class="sv-form-section-title mb-3">
+                            <i class="bi bi-person"></i> Informations client
+                        </div>
+
+                        <div class="sv-form-group">
+                            <label>Nom <span class="sv-required">*</span></label>
+                            <input type="text" th:field="*{name}"
+                                   placeholder="Nom du contact"
+                                   class="sv-input" required>
+                        </div>
+
+                        <div class="sv-form-group">
+                            <label>Raison sociale</label>
+                            <input type="text" th:field="*{corporateName}"
+                                   placeholder="Nom de l'entreprise"
+                                   class="sv-input">
+                        </div>
+
+                        <div class="sv-form-group">
+                            <label>Adresse</label>
+                            <input type="text" th:field="*{address}"
+                                   placeholder="Adresse"
+                                   class="sv-input">
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-4">
+                                <div class="sv-form-group">
+                                    <label>Code postal</label>
+                                    <input type="text" th:field="*{zipcode}"
+                                           placeholder="75001"
+                                           class="sv-input">
+                                </div>
+                            </div>
+                            <div class="col-8">
+                                <div class="sv-form-group">
+                                    <label>Ville</label>
+                                    <input type="text" th:field="*{city}"
+                                           placeholder="Paris"
+                                           class="sv-input">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sv-form-group">
+                            <label>Délai de paiement (jours)</label>
+                            <input type="number" th:field="*{delay}"
+                                   min="0" placeholder="30"
+                                   class="sv-input">
+                        </div>
+
+                        <!-- Compte utilisateur — création uniquement -->
+                        <div th:if="${customer.id == null}">
+                            <hr class="sv-divider">
+                            <div class="sv-form-section-title mb-3">
+                                <i class="bi bi-shield-lock"></i> Compte utilisateur
+                            </div>
+
+                            <div class="sv-form-group">
+                                <label>Email <span class="sv-required">*</span></label>
+                                <div class="sv-input-hint">Servira d'identifiant de connexion</div>
+                                <input type="email" name="username"
+                                       placeholder="client@entreprise.com"
+                                       class="sv-input" required>
+                            </div>
+
+                            <div class="sv-form-group">
+                                <label>Mot de passe <span class="sv-required">*</span></label>
+                                <input type="password" name="password"
+                                       placeholder="Mot de passe"
+                                       class="sv-input" required>
+                            </div>
+
+                            <div class="sv-form-group">
+                                <label>Rôle <span class="sv-required">*</span></label>
+                                <select name="role" class="sv-select" required title="role">
+                                    <option value="ROLE_CLIENT">
+                                        Client — accès espace facturation
+                                    </option>
+                                    <option value="ROLE_ADMIN">
+                                        Administrateur — accès back-office
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="sv-form-actions mt-4">
+                            <button type="submit" class="sv-btn sv-btn-primary">
+                                <i class="bi bi-check-lg"></i> Enregistrer
+                            </button>
+                            <a th:href="@{/admin/customers}" class="sv-btn sv-btn-ghost">
+                                Annuler
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
 </html>

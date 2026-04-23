@@ -4,7 +4,6 @@ import com.example.sprinvoices.models.Invoice;
 import com.example.sprinvoices.models.InvoiceRow;
 import com.example.sprinvoices.models.Product;
 import com.example.sprinvoices.repository.InvoiceRepository;
-import com.example.sprinvoices.repository.InvoiceRowRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

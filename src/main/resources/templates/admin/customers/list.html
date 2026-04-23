@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <th:block th:replace="~{fragments/sidebar :: head('Clients')}"></th:block>
 </head>
 <body>
@@ -10,51 +11,62 @@
 
 <div class="main-content" id="mainContent">
     <div class="topbar">
-        <span class="topbar-title">Gestion des clients</span>
+        <span class="topbar-title">Clients</span>
         <div class="topbar-actions">
-            <a th:href="@{/admin/customers/new}" class="btn btn-primary">+ Nouveau client</a>
+            <a th:href="@{/admin/customers/new}" class="sv-btn sv-btn-primary">
+                <i class="bi bi-plus-lg"></i> Nouveau client
+            </a>
         </div>
     </div>
-    <div class="page-content">
 
-        <div class="table-wrapper">
-            <table>
+    <div class="page-content">
+        <div class="sv-table-card">
+            <table class="table sv-table mb-0">
                 <thead>
                     <tr>
-                        <th>#</th>
                         <th>Nom</th>
                         <th>Raison sociale</th>
                         <th>Ville</th>
-                        <th>Délai paiement</th>
-                        <th>Identifiant</th>
-                        <th>Actions</th>
+                        <th>Délai</th>
+                        <th>Email / Identifiant</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="c : ${customers}">
-                        <td th:text="${c.id}"></td>
-                        <td th:text="${c.name}"></td>
-                        <td th:text="${c.corporateName}"></td>
-                        <td th:text="${c.city}"></td>
-                        <td th:text="${c.delay} + ' jours'"></td>
-                        <td th:text="${c.userAccount != null ? c.userAccount.username : '—'}"></td>
+                        <td class="fw-500" th:text="${c.name}"></td>
+                        <td class="text-muted" th:text="${c.corporateName}"></td>
+                        <td class="text-muted" th:text="${c.city}"></td>
                         <td>
-                            <div class="actions">
-                                <a th:href="@{/admin/customers/edit/{id}(id=${c.id})}" class="btn btn-warning btn-sm">Modifier</a>
-                                <form th:action="@{/admin/customers/delete/{id}(id=${c.id})}" method="post"
+                            <span class="sv-badge sv-badge-created"
+                                  th:text="${c.delay} + ' j'"></span>
+                        </td>
+                        <td class="text-muted"
+                            th:text="${c.userAccount != null ? c.userAccount.username : '—'}"></td>
+                        <td>
+                            <div class="sv-actions">
+                                <a th:href="@{/admin/customers/edit/{id}(id=${c.id})}"
+                                   class="sv-btn-icon" title="Modifier">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/admin/customers/delete/{id}(id=${c.id})}"
+                                      method="post"
                                       onsubmit="return confirm('Supprimer ce client ?')">
-                                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                    <button type="submit"
+                                            class="sv-btn-icon sv-btn-icon-danger"
+                                            title="Supprimer">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(customers)}">
-                        <td colspan="7" class="empty-state">Aucun client enregistré.</td>
+                        <td colspan="6" class="sv-empty">Aucun client enregistré.</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-
     </div>
 </div>
 

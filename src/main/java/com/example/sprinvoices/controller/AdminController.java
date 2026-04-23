@@ -87,10 +87,11 @@ public String dashboard(Model model) {
 public String createCustomer(@ModelAttribute Customer customer,
                               @RequestParam String username,
                               @RequestParam String password,
+                               @RequestParam String role,
                               RedirectAttributes redirectAttributes) {
 
     try {
-        customerService.create(customer, username, password);
+        customerService.create(customer, username, password, role);
         return "redirect:/admin/customers";
 
     } catch (RuntimeException e) {

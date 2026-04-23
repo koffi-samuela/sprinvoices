@@ -626,3 +626,165 @@ textarea { resize: vertical; min-height: 80px; }
 .text-orange { color: #e67e22; }
 .text-green  { color: #27ae60; }
 .fw-500      { font-weight: 600; }
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════ */
+.sv-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.sv-btn-primary { background: #C0392B; color: white; }
+.sv-btn-primary:hover { background: #a93226; color: white; }
+.sv-btn-secondary { background: #f0f2f5; color: #2c3e50; }
+.sv-btn-secondary:hover { background: #e2e5ea; color: #2c3e50; }
+.sv-btn-ghost { background: transparent; color: #2c3e50; border: 1px solid #dce1e7; }
+.sv-btn-ghost:hover { background: #f0f2f5; color: #2c3e50; }
+.sv-btn-warning { background: #e67e22; color: white; }
+.sv-btn-warning:hover { background: #ca6f1e; color: white; }
+.sv-btn-success { background: #27ae60; color: white; }
+.sv-btn-success:hover { background: #1e8449; color: white; }
+
+.sv-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: #f0f2f5;
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.sv-btn-icon:hover { background: #e2e5ea; color: #2c3e50; }
+.sv-btn-icon-danger { background: #fdecea; color: #C0392B; }
+.sv-btn-icon-danger:hover { background: #f5c6cb; color: #a93226; }
+
+.sv-back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: #f0f2f5;
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 16px;
+    transition: all 0.15s;
+}
+.sv-back-btn:hover { background: #e2e5ea; color: #2c3e50; }
+
+/* ═══════════════════════════════════════════
+   FILTERS
+═══════════════════════════════════════════ */
+.sv-filter-bar {
+    background: white;
+    border: 1px solid #eef0f3;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+.sv-filter-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 160px; }
+.sv-filter-group label { font-size: 11px; font-weight: 600; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.4px; }
+.sv-filter-actions { display: flex; gap: 8px; align-items: flex-end; }
+
+/* ═══════════════════════════════════════════
+   FORM INPUTS
+═══════════════════════════════════════════ */
+.sv-input,
+.sv-select {
+    width: 100%;
+    padding: 9px 13px;
+    border: 1px solid #dce1e7;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #2c3e50;
+    background: white;
+    transition: border-color 0.15s;
+    appearance: auto;
+}
+.sv-input:focus,
+.sv-select:focus {
+    outline: none;
+    border-color: #C0392B;
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.08);
+}
+
+/* ═══════════════════════════════════════════
+   DETAIL CARD
+═══════════════════════════════════════════ */
+.sv-detail-card {
+    background: white;
+    border: 1px solid #eef0f3;
+    border-radius: 12px;
+    padding: 24px;
+}
+.sv-detail-header { margin-bottom: 4px; }
+.sv-detail-title { font-size: 17px; font-weight: 700; color: #2c3e50; }
+.sv-detail-meta { font-size: 12px; color: #7f8c8d; margin-top: 4px; }
+.sv-detail-section-title { font-size: 13px; font-weight: 700; color: #2c3e50; text-transform: uppercase; letter-spacing: 0.4px; }
+
+.sv-info-box {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 16px;
+}
+.sv-info-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #7f8c8d; letter-spacing: 0.5px; margin-bottom: 10px; }
+.sv-info-value { font-size: 14px; font-weight: 600; color: #2c3e50; }
+.sv-info-sub { font-size: 13px; color: #7f8c8d; margin-top: 2px; }
+.sv-info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #2c3e50;
+    padding: 5px 0;
+    border-bottom: 1px solid #eef0f3;
+}
+.sv-info-row:last-child { border-bottom: none; }
+
+/* ═══════════════════════════════════════════
+   TABLE EXTRAS
+═══════════════════════════════════════════ */
+.sv-invoice-number { font-weight: 700; color: #C0392B; font-size: 13px; }
+.sv-amount { font-weight: 600; color: #2c3e50; }
+.sv-actions { display: flex; gap: 6px; align-items: center; }
+.sv-badge-category { background: #f0f3ff; color: #4a55c5; }
+
+.sv-total-row td {
+    font-weight: 700;
+    background: #fef5f4;
+    color: #C0392B;
+    font-size: 14px;
+    text-align: right;
+}
+.sv-total-row td:first-child { text-align: right; }
+
+/* ═══════════════════════════════════════════
+   FORM CARD
+═══════════════════════════════════════════ */
+.sv-form-card {
+    background: white;
+    border: 1px solid #eef0f3;
+    border-radius: 12px;
+    padding: 32px;
+}
+.sv-form-card-title { font-size: 15px; font-weight: 700; color: #2c3e50; }
+.sv-form-group { margin-bottom: 18px; }
+.sv-form-group label { display: block; font-size: 12px; font-weight: 600; color: #2c3e50; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+.sv-required { color: #C0392B; }
+.sv-form-actions { display: flex; gap: 10px; align-items: center; }

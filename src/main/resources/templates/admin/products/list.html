@@ -1,11 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <th:block th:replace="~{fragments/sidebar :: head('Produits')}"></th:block>
 </head>
-
 <body>
 
 <div th:replace="~{fragments/sidebar :: sidebar('products')}"></div>
@@ -13,54 +11,62 @@
 <div class="main-content" id="mainContent">
 
     <div class="topbar">
-        <span class="topbar-title">Catalogue de produits</span>
+        <span class="topbar-title">Produits</span>
+        <div class="topbar-actions">
+            <a th:href="@{/admin/products/new}" class="sv-btn sv-btn-primary">
+                <i class="bi bi-plus-lg"></i> Nouveau produit
+            </a>
+        </div>
     </div>
 
     <div class="page-content">
 
-        <div class="page-header">
-            <h2>Catalogue de produits</h2>
-            <a th:href="@{/admin/products/new}" class="btn btn-primary">+ Nouveau produit</a>
-        </div>
-
-        <table>
-            <thead>
+        <div class="sv-table-card">
+            <table class="table sv-table mb-0">
+                <thead>
                 <tr>
                     <th>#</th>
                     <th>Désignation</th>
                     <th>Catégorie</th>
-                    <th>Prix unitaire HT</th>
+                    <th>Prix HT</th>
                     <th>Description</th>
-                    <th>Actions</th>
+                    <th></th>
                 </tr>
-            </thead>
+                </thead>
 
-            <tbody>
+                <tbody>
+
                 <tr th:each="p : ${products}">
                     <td th:text="${p.id}"></td>
-                    <td th:text="${p.designation}"></td>
+
+                    <td class="fw-500" th:text="${p.designation}"></td>
 
                     <td>
-                        <span class="badge" th:text="${p.category}"></span>
+                        <span class="sv-badge sv-badge-created"
+                              th:text="${p.category != null ? p.category : '—'}"></span>
                     </td>
 
                     <td th:text="${#numbers.formatDecimal(p.unitPrice, 1, 2)} + ' €'"></td>
-                    <td th:text="${p.description}"></td>
+
+                    <td class="text-muted" th:text="${p.description}"></td>
 
                     <td>
-                        <div class="actions">
+                        <div class="sv-actions">
 
                             <a th:href="@{/admin/products/edit/{id}(id=${p.id})}"
-                               class="btn btn-warning">
-                                Modifier
+                               class="sv-btn-icon"
+                               title="Modifier">
+                                <i class="bi bi-pencil"></i>
                             </a>
 
                             <form th:action="@{/admin/products/delete/{id}(id=${p.id})}"
                                   method="post"
                                   onsubmit="return confirm('Supprimer ce produit ?')">
 
-                                <button type="submit" class="btn btn-danger">
-                                    Supprimer
+                                <button type="submit"
+                                        class="sv-btn-icon sv-btn-icon-danger"
+                                        title="Supprimer">
+                                    <i class="bi bi-trash"></i>
                                 </button>
 
                             </form>
@@ -70,12 +76,14 @@
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(products)}">
-                    <td colspan="6" style="text-align:center; color:#999; padding: 30px;">
+                    <td colspan="6" class="sv-empty">
                         Aucun produit enregistré.
                     </td>
                 </tr>
-            </tbody>
-        </table>
+
+                </tbody>
+            </table>
+        </div>
 
     </div>
 

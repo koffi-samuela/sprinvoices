@@ -40,24 +40,20 @@ public class CustomerService {
 
     // Crée un client ET son compte utilisateur en même temps
     @Transactional
-    public void create(Customer customer, String username, String password) {
+    public void create(Customer customer, String username, String password, String roleName) {
 
-        //verifie que le username n'est pas déjà pris
-    if (userAccountRepository.findByUsername(username).isPresent()) {
-        throw new RuntimeException("Nom d'utilisateur déjà pris : " + username);
-    }
+        // verifie que le username n'est pas déjà pris
+        if (userAccountRepository.findByUsername(username).isPresent()) {
+            throw new RuntimeException("Nom d'utilisateur déjà pris : " + username);
+        }
         // 1. Récupère le rôle CLIENT
-        Role role = roleRepository.findByName("ROLE_CLIENT");
-
-        // 2. Crée le compte utilisateur
+        Role role = roleRepository.findByName(roleName);
         UserAccount account = new UserAccount();
         account.setUsername(username);
         account.setPassword(passwordEncoder.encode(password));
         account.setEnabled(true);
         account.setRole(role);
         userAccountRepository.save(account);
-
-        // 3. Lie le compte au client
         customer.setUserAccount(account);
         customerRepository.save(customer);
     }

@@ -47,10 +47,14 @@
 
         <div class="nav-section-title">Compte</div>
 
-        <a th:href="@{/logout}" class="nav-item">
-            <i class="bi bi-box-arrow-right nav-icon"></i>
-            <span class="nav-label">Déconnexion</span>
-        </a>
+<form th:action="@{/logout}" method="post" id="logoutForm" style="display:none;">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+</form>
+
+<a href="#" class="nav-item" onclick="document.getElementById('logoutForm').submit(); return false;">
+    <i class="bi bi-box-arrow-right nav-icon"></i>
+    <span class="nav-label">Déconnexion</span>
+</a>
     </nav>
 
     <div class="sidebar-user">

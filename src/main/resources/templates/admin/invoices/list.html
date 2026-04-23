@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <th:block th:replace="~{fragments/sidebar :: head('Factures')}"></th:block>
 </head>
 <body>
@@ -10,18 +11,21 @@
 
 <div class="main-content" id="mainContent">
     <div class="topbar">
-        <span class="topbar-title">Gestion des factures</span>
+        <span class="topbar-title">Factures</span>
         <div class="topbar-actions">
-            <a th:href="@{/admin/invoices/new}" class="btn btn-primary">+ Nouvelle facture</a>
+            <a th:href="@{/admin/invoices/new}" class="sv-btn sv-btn-primary">
+                <i class="bi bi-plus-lg"></i> Nouvelle facture
+            </a>
         </div>
     </div>
+
     <div class="page-content">
 
-        <!-- Barre de filtres -->
-        <form th:action="@{/admin/invoices}" method="get" class="filter-bar">
-            <div class="form-group">
+        <!-- Filtres -->
+        <form th:action="@{/admin/invoices}" method="get" class="sv-filter-bar mb-4">
+            <div class="sv-filter-group">
                 <label>Client</label>
-                <select name="customerId" title="customer">
+                <select name="customerId" class="sv-select" title="customer">
                     <option value="">Tous les clients</option>
                     <option th:each="c : ${customers}"
                             th:value="${c.id}"
@@ -30,22 +34,22 @@
                     </option>
                 </select>
             </div>
-            <div class="form-group">
+            <div class="sv-filter-group">
                 <label>État</label>
-                <select name="status" title="status" class="form-select">
+                <select name="status" class="sv-select" title="status"> 
                     <option value="">Tous les états</option>
                     <option value="CREATED"  th:selected="${selectedStatus == 'CREATED'}">Créée</option>
                     <option value="INVOICED" th:selected="${selectedStatus == 'INVOICED'}">Facturée</option>
                     <option value="PAID"     th:selected="${selectedStatus == 'PAID'}">Payée</option>
                 </select>
             </div>
-            <div class="form-group" style="flex:0">
-                <label>&nbsp;</label>
-                <button type="submit" class="btn btn-info">Filtrer</button>
-            </div>
-            <div class="form-group" style="flex:0">
-                <label>&nbsp;</label>
-                <a th:href="@{/admin/invoices}" class="btn btn-secondary">Réinitialiser</a>
+            <div class="sv-filter-actions">
+                <button type="submit" class="sv-btn sv-btn-secondary">
+                    <i class="bi bi-funnel"></i> Filtrer
+                </button>
+                <a th:href="@{/admin/invoices}" class="sv-btn sv-btn-ghost">
+                    <i class="bi bi-x"></i> Réinitialiser
+                </a>
             </div>
         </form>
 
@@ -54,44 +58,53 @@
             <table class="table sv-table mb-0">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Numéro</th>
                         <th>Désignation</th>
                         <th>Client</th>
                         <th>Date</th>
                         <th>État</th>
                         <th>Total HT</th>
-                        <th>Actions</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="inv : ${invoices}">
                         <td>
-    <span style="font-weight:600; color:#C0392B;"
-          th:text="${inv.number}">FAC-2026-001</span>
-</td>
+                            <span class="sv-invoice-number" th:text="${inv.number}"></span>
+                        </td>
                         <td th:text="${inv.designation}"></td>
                         <td th:text="${inv.customer.name}"></td>
-                        <td th:text="${#temporals.format(inv.createdAt, 'dd/MM/yyyy')}"></td>
+                        <td class="text-muted"
+                            th:text="${#temporals.format(inv.createdAt, 'dd/MM/yyyy')}"></td>
                         <td>
-                            <span th:if="${inv.paidAt != null}" class="sv-badge sv-badge-paid">Payée</span>
+                            <span th:if="${inv.paidAt != null}"
+                                  class="sv-badge sv-badge-paid">Payée</span>
                             <span th:if="${inv.paidAt == null and inv.invoicedAt != null}"
                                   class="sv-badge sv-badge-invoiced">Facturée</span>
                             <span th:if="${inv.invoicedAt == null}"
                                   class="sv-badge sv-badge-created">Créée</span>
                         </td>
-                        <td th:text="${#numbers.formatDecimal(inv.total(), 1, 2)} + ' €'"></td>
+                        <td class="sv-amount"
+                            th:text="${#numbers.formatDecimal(inv.total(), 1, 2)} + ' €'"></td>
                         <td>
-                            <div class="actions">
-                                <a th:href="@{/admin/invoices/{id}(id=${inv.id})}" class="btn btn-info btn-sm">Détail</a>
-                                <form th:action="@{/admin/invoices/delete/{id}(id=${inv.id})}" method="post"
+                            <div class="sv-actions">
+                                <a th:href="@{/admin/invoices/{id}(id=${inv.id})}"
+                                   class="sv-btn-icon" title="Voir le détail">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <form th:action="@{/admin/invoices/delete/{id}(id=${inv.id})}"
+                                      method="post"
                                       onsubmit="return confirm('Supprimer cette facture ?')">
-                                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                    <button type="submit" class="sv-btn-icon sv-btn-icon-danger"
+                                            title="Supprimer">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(invoices)}">
-                        <td colspan="7" class="empty-state">Aucune facture trouvée.</td>
+                        <td colspan="7" class="sv-empty">Aucune facture trouvée.</td>
                     </tr>
                 </tbody>
             </table>
