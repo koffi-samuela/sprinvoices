@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block th:replace="~{fragments/sidebar :: head('Dashboard')}"></th:block>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar('dashboard')}"></div>
+
+<div class="main-content" id="mainContent">
+
+    <div class="topbar">
+        <span class="topbar-title">Tableau de bord</span>
+    </div>
+
+    <div class="page-content">
+
+        <!-- Stat cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="sv-stat-card">
+                    <div class="sv-stat-icon bg-red-soft">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div>
+                        <div class="sv-stat-number" th:text="${totalClients}">0</div>
+                        <div class="sv-stat-label">Clients</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="sv-stat-card">
+                    <div class="sv-stat-icon bg-blue-soft">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <div>
+                        <div class="sv-stat-number" th:text="${totalProducts}">0</div>
+                        <div class="sv-stat-label">Produits</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="sv-stat-card">
+                    <div class="sv-stat-icon bg-orange-soft">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+                    <div>
+                        <div class="sv-stat-number" th:text="${totalInvoices}">0</div>
+                        <div class="sv-stat-label">Factures</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="sv-stat-card">
+                    <div class="sv-stat-icon bg-green-soft">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div>
+                        <div class="sv-stat-number" th:text="${nbPaid}">0</div>
+                        <div class="sv-stat-label">Payées</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CA cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="sv-ca-card">
+                    <div class="sv-ca-label">Chiffre d'affaires total</div>
+                    <div class="sv-ca-amount text-dark"
+                         th:text="${#numbers.formatDecimal(caTotal, 1, 2)} + ' €'">0 €</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="sv-ca-card">
+                    <div class="sv-ca-label">En attente de paiement</div>
+                    <div class="sv-ca-amount text-orange"
+                         th:text="${#numbers.formatDecimal(caEnAttente, 1, 2)} + ' €'">0 €</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="sv-ca-card">
+                    <div class="sv-ca-label">Encaissé</div>
+                    <div class="sv-ca-amount text-green"
+                         th:text="${#numbers.formatDecimal(caPaye, 1, 2)} + ' €'">0 €</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- États -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="sv-state-card">
+                    <div class="sv-state-icon bg-orange-soft">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <div>
+                        <div class="sv-state-number" th:text="${nbCreated}">0</div>
+                        <div class="sv-state-label">Créées</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="sv-state-card">
+                    <div class="sv-state-icon bg-blue-soft">
+                        <i class="bi bi-send"></i>
+                    </div>
+                    <div>
+                        <div class="sv-state-number" th:text="${nbInvoiced}">0</div>
+                        <div class="sv-state-label">Facturées</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="sv-state-card">
+                    <div class="sv-state-icon bg-green-soft">
+                        <i class="bi bi-patch-check"></i>
+                    </div>
+                    <div>
+                        <div class="sv-state-number" th:text="${nbPaid}">0</div>
+                        <div class="sv-state-label">Payées</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Factures récentes -->
+        <div class="sv-section-header mb-3">
+            <span class="sv-section-title">Factures récentes</span>
+            <a th:href="@{/admin/invoices}" class="sv-section-link">
+                Voir toutes <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="sv-table-card">
+            <table class="table sv-table mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Désignation</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th>État</th>
+                        <th>Total HT</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="inv : ${recentInvoices}">
+                        <td class="text-muted" th:text="${inv.id}"></td>
+                        <td th:text="${inv.designation}"></td>
+                        <td th:text="${inv.customer.name}"></td>
+                        <td class="text-muted"
+                            th:text="${#temporals.format(inv.createdAt, 'dd/MM/yyyy')}"></td>
+                        <td>
+                            <span th:if="${inv.paidAt != null}" class="sv-badge sv-badge-paid">Payée</span>
+                            <span th:if="${inv.paidAt == null and inv.invoicedAt != null}"
+                                  class="sv-badge sv-badge-invoiced">Facturée</span>
+                            <span th:if="${inv.invoicedAt == null}"
+                                  class="sv-badge sv-badge-created">Créée</span>
+                        </td>
+                        <td class="fw-500"
+                            th:text="${#numbers.formatDecimal(inv.total(), 1, 2)} + ' €'"></td>
+                        <td>
+                            <a th:href="@{/admin/invoices/{id}(id=${inv.id})}"
+                               class="sv-btn-icon" title="Voir">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(recentInvoices)}">
+                        <td colspan="7" class="sv-empty">Aucune facture pour le moment.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

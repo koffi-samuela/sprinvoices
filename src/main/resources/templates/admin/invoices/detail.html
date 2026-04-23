@@ -1,0 +1,162 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <th:block th:replace="~{fragments/sidebar :: head('Facture')}"></th:block>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar('invoices')}"></div>
+
+<div class="main-content" id="mainContent">
+
+    <div class="topbar">
+        <span class="topbar-title">Facture</span>
+    </div>
+
+    <div class="page-content">
+
+        <!-- En-tête facture -->
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <h2 th:text="${invoice.number} + ' — ' + ${invoice.designation}"></h2>
+                    <p class="meta" th:text="'Créée le ' + ${#temporals.format(invoice.createdAt, 'dd/MM/yyyy à HH:mm')}"></p>
+                </div>
+
+                <span th:if="${invoice.paidAt != null}" class="badge badge-paid">PAYÉE</span>
+                <span th:if="${invoice.paidAt == null and invoice.invoicedAt != null}" class="badge badge-invoiced">FACTURÉE</span>
+                <span th:if="${invoice.invoicedAt == null}" class="badge badge-created">CRÉÉE</span>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-box">
+                    <label>Client</label>
+                    <p th:text="${invoice.customer.name}"></p>
+                    <p th:text="${invoice.customer.corporateName}" style="color:#7f8c8d; font-size:13px;"></p>
+                    <p th:text="${invoice.customer.address}" style="color:#7f8c8d; font-size:13px;"></p>
+                    <p th:text="${invoice.customer.zipcode} + ' ' + ${invoice.customer.city}" style="color:#7f8c8d; font-size:13px;"></p>
+                </div>
+
+                <div class="info-box">
+                    <label>Dates</label>
+                    <p th:text="'Créée : ' + ${#temporals.format(invoice.createdAt, 'dd/MM/yyyy')}"></p>
+
+                    <p th:if="${invoice.invoicedAt != null}"
+                       th:text="'Facturée : ' + ${#temporals.format(invoice.invoicedAt, 'dd/MM/yyyy')}"></p>
+
+                    <p th:if="${invoice.invoicedAt == null}" style="color:#bbb;">Facturée : —</p>
+
+                    <p th:if="${invoice.paidAt != null}"
+                       th:text="'Payée : ' + ${#temporals.format(invoice.paidAt, 'dd/MM/yyyy')}"></p>
+
+                    <p th:if="${invoice.paidAt == null}" style="color:#bbb;">Payée : —</p>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <a th:href="@{/admin/invoices/{id}/pdf(id=${invoice.id})}"
+                   target="_blank" class="btn btn-pdf">👁 Visualiser PDF</a>
+
+                <a th:href="@{/admin/invoices/{id}/pdf/download(id=${invoice.id})}"
+                   class="btn btn-pdf-dl">⬇ Télécharger PDF</a>
+            </div>
+        </div>
+
+        <!-- Lignes -->
+        <div class="card">
+            <h3 style="color:#2c3e50; margin-bottom:16px;">Lignes de facture</h3>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Catégorie</th>
+                    <th>Prix unitaire HT</th>
+                    <th>Quantité</th>
+                    <th>Montant HT</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="row : ${invoice.rows}">
+                    <td th:text="${row.product.designation}"></td>
+                    <td th:text="${row.product.category}"></td>
+                    <td th:text="${#numbers.formatDecimal(row.product.unitPrice, 1, 2)} + ' €'"></td>
+                    <td th:text="${row.quantity}"></td>
+                    <td th:text="${#numbers.formatDecimal(row.amount(), 1, 2)} + ' €'"></td>
+                    <td>
+                        <form th:action="@{/admin/invoices/{id}/delete-row/{rowId}(id=${invoice.id},rowId=${row.id})}"
+                              method="post">
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Supprimer cette ligne ?')">✕</button>
+                        </form>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(invoice.rows)}">
+                    <td colspan="6" style="text-align:center; color:#999; padding:20px;">
+                        Aucune ligne. Ajoutez des produits ci-dessous.
+                    </td>
+                </tr>
+
+                <tr class="total-row">
+                    <td colspan="4" style="text-align:right;">TOTAL HT</td>
+                    <td th:text="${#numbers.formatDecimal(invoice.total(), 1, 2)} + ' €'"></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <hr class="separator"/>
+
+            <p style="font-size:13px; font-weight:bold; color:#2c3e50;">Ajouter une ligne :</p>
+
+            <form th:action="@{/admin/invoices/{id}/add-row(id=${invoice.id})}"
+                  method="post"
+                  class="add-row-form">
+
+                <select name="productId" required title="product">
+                    <option value="">-- Produit --</option>
+
+                    <option th:each="p : ${products}"
+                            th:value="${p.id}"
+                            th:text="${p.designation} + ' (' + ${p.unitPrice} + ' €)'">
+                    </option>
+                </select>
+
+                <input type="number" name="quantity" step="0.5" min="0.5"
+                       placeholder="Quantité" required style="width:120px;"/>
+
+                <button type="submit" class="btn btn-success">+ Ajouter</button>
+            </form>
+
+            <hr class="separator"/>
+
+            <div class="actions">
+
+                <form th:if="${invoice.invoicedAt == null}"
+                      th:action="@{/admin/invoices/{id}/mark-invoiced(id=${invoice.id})}"
+                      method="post">
+                    <button type="submit" class="btn btn-warning">Marquer comme FACTURÉE</button>
+                </form>
+
+                <form th:if="${invoice.invoicedAt != null and invoice.paidAt == null}"
+                      th:action="@{/admin/invoices/{id}/mark-paid(id=${invoice.id})}"
+                      method="post">
+                    <button type="submit" class="btn btn-success">Marquer comme PAYÉE</button>
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

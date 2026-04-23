@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block th:replace="~{fragments/sidebar-client :: head('Mes factures')}"></th:block>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar-client :: sidebar('dashboard')}"></div>
+
+<div class="main-content" id="mainContent">
+
+    <div class="topbar">
+        <span class="topbar-title" th:text="'Bonjour, ' + ${customer.name}">Bonjour</span>
+        <span class="topbar-sub"
+              th:text="'Délai de paiement : ' + ${customer.delay} + ' jours'"></span>
+    </div>
+
+    <div class="page-content">
+
+        <!-- États -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="sv-state-card">
+                    <div class="sv-state-icon bg-orange-soft">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <div>
+                        <div class="sv-state-number"
+                             th:text="${#lists.size(invoices.?[invoicedAt == null])}">0</div>
+                        <div class="sv-state-label">En attente</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="sv-state-card">
+                    <div class="sv-state-icon bg-blue-soft">
+                        <i class="bi bi-credit-card"></i>
+                    </div>
+                    <div>
+                        <div class="sv-state-number"
+                             th:text="${#lists.size(invoices.?[invoicedAt != null and paidAt == null])}">0</div>
+                        <div class="sv-state-label">À payer</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="sv-state-card">
+                    <div class="sv-state-icon bg-green-soft">
+                        <i class="bi bi-patch-check"></i>
+                    </div>
+                    <div>
+                        <div class="sv-state-number"
+                             th:text="${#lists.size(invoices.?[paidAt != null])}">0</div>
+                        <div class="sv-state-label">Payées</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste factures -->
+        <div class="sv-section-header mb-3">
+            <span class="sv-section-title">Mes factures</span>
+        </div>
+        <div class="sv-table-card">
+            <table class="table sv-table mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Désignation</th>
+                        <th>Date</th>
+                        <th>État</th>
+                        <th>Total HT</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="inv : ${invoices}">
+                        <td class="text-muted" th:text="${inv.id}"></td>
+                        <td th:text="${inv.designation}"></td>
+                        <td class="text-muted"
+                            th:text="${#temporals.format(inv.createdAt, 'dd/MM/yyyy')}"></td>
+                        <td>
+                            <span th:if="${inv.paidAt != null}"
+                                  class="sv-badge sv-badge-paid">Payée</span>
+                            <span th:if="${inv.paidAt == null and inv.invoicedAt != null}"
+                                  class="sv-badge sv-badge-invoiced">Facturée</span>
+                            <span th:if="${inv.invoicedAt == null}"
+                                  class="sv-badge sv-badge-created">Créée</span>
+                        </td>
+                        <td class="fw-500"
+                            th:text="${#numbers.formatDecimal(inv.total(), 1, 2)} + ' €'"></td>
+                        <td>
+                            <a th:href="@{/client/invoices/{id}(id=${inv.id})}"
+                               class="sv-btn-icon" title="Voir">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(invoices)}">
+                        <td colspan="6" class="sv-empty">Aucune facture pour le moment.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

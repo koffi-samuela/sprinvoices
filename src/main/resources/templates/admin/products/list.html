@@ -1,0 +1,85 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <th:block th:replace="~{fragments/sidebar :: head('Produits')}"></th:block>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar('products')}"></div>
+
+<div class="main-content" id="mainContent">
+
+    <div class="topbar">
+        <span class="topbar-title">Catalogue de produits</span>
+    </div>
+
+    <div class="page-content">
+
+        <div class="page-header">
+            <h2>Catalogue de produits</h2>
+            <a th:href="@{/admin/products/new}" class="btn btn-primary">+ Nouveau produit</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Désignation</th>
+                    <th>Catégorie</th>
+                    <th>Prix unitaire HT</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="p : ${products}">
+                    <td th:text="${p.id}"></td>
+                    <td th:text="${p.designation}"></td>
+
+                    <td>
+                        <span class="badge" th:text="${p.category}"></span>
+                    </td>
+
+                    <td th:text="${#numbers.formatDecimal(p.unitPrice, 1, 2)} + ' €'"></td>
+                    <td th:text="${p.description}"></td>
+
+                    <td>
+                        <div class="actions">
+
+                            <a th:href="@{/admin/products/edit/{id}(id=${p.id})}"
+                               class="btn btn-warning">
+                                Modifier
+                            </a>
+
+                            <form th:action="@{/admin/products/delete/{id}(id=${p.id})}"
+                                  method="post"
+                                  onsubmit="return confirm('Supprimer ce produit ?')">
+
+                                <button type="submit" class="btn btn-danger">
+                                    Supprimer
+                                </button>
+
+                            </form>
+
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(products)}">
+                    <td colspan="6" style="text-align:center; color:#999; padding: 30px;">
+                        Aucun produit enregistré.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

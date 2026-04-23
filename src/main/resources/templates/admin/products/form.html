@@ -1,0 +1,64 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <th:block th:replace="~{fragments/sidebar :: head('Produit')}"></th:block>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar('products')}"></div>
+
+<div class="main-content" id="mainContent">
+
+    <div class="topbar">
+        <span class="topbar-title"
+              th:text="${product.id == null ? 'Nouveau produit' : 'Modifier le produit'}">
+        </span>
+    </div>
+
+    <div class="page-content">
+
+        <div class="card">
+
+            <h2 th:text="${product.id == null ? 'Nouveau produit' : 'Modifier le produit'}"></h2>
+
+            <form th:action="${product.id == null ? '/admin/products/new' : '/admin/products/edit/' + product.id}"
+                  th:object="${product}" method="post">
+
+                <div class="form-group">
+                    <label>Désignation *</label>
+                    <input type="text" th:field="*{designation}" placeholder="Nom du produit/service" required/>
+                </div>
+
+                <div class="form-group">
+                    <label>Catégorie</label>
+                    <input type="text" th:field="*{category}" placeholder="Ex: Conseil, Développement..."/>
+                </div>
+
+                <div class="form-group">
+                    <label>Prix unitaire HT (€) *</label>
+                    <input type="number" th:field="*{unitPrice}" step="0.01" min="0" placeholder="0.00" required/>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea th:field="*{description}" placeholder="Description du produit ou service"></textarea>
+                </div>
+
+                <div style="margin-top: 24px;">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a th:href="@{/admin/products}" class="btn btn-secondary">Annuler</a>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

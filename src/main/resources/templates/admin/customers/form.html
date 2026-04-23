@@ -1,0 +1,105 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <th:block th:replace="~{fragments/sidebar :: head('Clients')}"></th:block>
+  </head>
+  <body>
+    <div th:replace="~{fragments/sidebar :: sidebar('customers')}"></div>
+    <div class="main-content" id="mainContent">
+      <div class="topbar">
+        <span class="topbar-title"  th:text="${customer.id == null ? 'Nouveau client' : 'Modifier le client'}"></span>
+      </div>
+      <div class="page-content">
+        <!-- contenu existant ici -->
+        <div class="card">
+          <!-- <h2
+            th:text="${customer.id == null ? 'Nouveau client' : 'Modifier le client'}"
+          ></h2> -->
+          <div th:if="${error}" class="alert alert-danger">
+    <span th:text="${error}"></span>
+</div>
+          <form
+            th:action="${customer.id == null ? '/admin/customers/new' : '/admin/customers/edit/' + customer.id}"
+            th:object="${customer}"
+            method="post"
+          >
+            <div class="section-title">Informations client</div>
+
+            <div class="form-group">
+              <label>Nom *</label>
+              <input
+                type="text"
+                th:field="*{name}"
+                placeholder="Nom du contact"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Raison sociale</label>
+              <input
+                type="text"
+                th:field="*{corporateName}"
+                placeholder="Nom de l'entreprise"
+              />
+            </div>
+            <div class="form-group">
+              <label>Adresse</label>
+              <input type="text" th:field="*{address}" placeholder="Adresse" />
+            </div>
+            <div style="display: flex; gap: 12px">
+              <div class="form-group" style="flex: 1">
+                <label>Code postal</label>
+                <input type="text" th:field="*{zipcode}" placeholder="75001" />
+              </div>
+              <div class="form-group" style="flex: 2">
+                <label>Ville</label>
+                <input type="text" th:field="*{city}" placeholder="Paris" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Délai de paiement (jours)</label>
+              <input
+                type="number"
+                th:field="*{delay}"
+                min="0"
+                placeholder="30"
+              />
+            </div>
+
+            <!-- Compte utilisateur uniquement à la création -->
+            <div th:if="${customer.id == null}">
+              <hr class="separator" />
+              <div class="section-title">Compte utilisateur</div>
+              <div class="form-group">
+                <label>Identifiant *</label>
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="identifiant de connexion"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Mot de passe *</label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="mot de passe"
+                  required
+                />
+              </div>
+            </div>
+
+            <div style="margin-top: 24px">
+              <button type="submit" class="btn btn-primary">Enregistrer</button>
+              <a th:href="@{/admin/customers}" class="btn btn-secondary"
+                >Annuler</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block th:replace="~{fragments/sidebar :: head('Clients')}"></th:block>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar('customers')}"></div>
+
+<div class="main-content" id="mainContent">
+    <div class="topbar">
+        <span class="topbar-title">Gestion des clients</span>
+        <div class="topbar-actions">
+            <a th:href="@{/admin/customers/new}" class="btn btn-primary">+ Nouveau client</a>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nom</th>
+                        <th>Raison sociale</th>
+                        <th>Ville</th>
+                        <th>Délai paiement</th>
+                        <th>Identifiant</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${customers}">
+                        <td th:text="${c.id}"></td>
+                        <td th:text="${c.name}"></td>
+                        <td th:text="${c.corporateName}"></td>
+                        <td th:text="${c.city}"></td>
+                        <td th:text="${c.delay} + ' jours'"></td>
+                        <td th:text="${c.userAccount != null ? c.userAccount.username : '—'}"></td>
+                        <td>
+                            <div class="actions">
+                                <a th:href="@{/admin/customers/edit/{id}(id=${c.id})}" class="btn btn-warning btn-sm">Modifier</a>
+                                <form th:action="@{/admin/customers/delete/{id}(id=${c.id})}" method="post"
+                                      onsubmit="return confirm('Supprimer ce client ?')">
+                                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(customers)}">
+                        <td colspan="7" class="empty-state">Aucun client enregistré.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

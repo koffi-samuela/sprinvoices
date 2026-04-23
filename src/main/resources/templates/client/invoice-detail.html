@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <th:block th:replace="~{fragments/sidebar-client :: head('Facture')}"></th:block>
+</head>
+<body>
+
+<div th:replace="~{fragments/sidebar-client :: sidebar('dashboard')}"></div>
+
+<div class="main-content" id="mainContent">
+    <div class="topbar">
+        <span class="topbar-title" th:text="'Facture #' + ${invoice.id}"></span>
+        <div class="topbar-actions">
+            <a th:href="@{/client/dashboard}" class="btn btn-secondary btn-sm">← Retour</a>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <div class="invoice-preview">
+
+            <!-- En-tête facture -->
+            <div class="invoice-header-block">
+                <div>
+                    <div style="font-size:26px; font-weight:bold; color:#2c3e50;">SprinVoices</div>
+                    <div style="color:#7f8c8d; font-size:13px; margin-top:4px;">Module de facturation</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:20px; font-weight:bold; color:#2c3e50;">
+                        FACTURE #<span th:text="${invoice.id}"></span>
+                    </div>
+                    <div style="font-size:13px; color:#7f8c8d; margin-top:4px;"
+                         th:text="${invoice.designation}"></div>
+                    <span th:if="${invoice.paidAt != null}" class="badge badge-paid">PAYÉE</span>
+                    <span th:if="${invoice.paidAt == null and invoice.invoicedAt != null}" class="badge badge-invoiced">FACTURÉE</span>
+                    <span th:if="${invoice.invoicedAt == null}" class="badge badge-created">CRÉÉE</span>
+                </div>
+            </div>
+
+            <!-- Infos client / dates -->
+            <div class="info-grid-2">
+                <div class="info-box">
+                    <div class="info-label">Facturer à</div>
+                    <p th:text="${invoice.customer.name}" style="font-weight:bold;"></p>
+                    <p th:text="${invoice.customer.corporateName}"></p>
+                    <p th:text="${invoice.customer.address}"></p>
+                    <p th:text="${invoice.customer.zipcode} + ' ' + ${invoice.customer.city}"></p>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">Dates</div>
+                    <p th:text="'Créée le : ' + ${#temporals.format(invoice.createdAt, 'dd/MM/yyyy')}"></p>
+                    <p th:if="${invoice.invoicedAt != null}"
+                       th:text="'Facturée le : ' + ${#temporals.format(invoice.invoicedAt, 'dd/MM/yyyy')}"></p>
+                    <p th:if="${invoice.paidAt != null}"
+                       th:text="'Payée le : ' + ${#temporals.format(invoice.paidAt, 'dd/MM/yyyy')}"></p>
+                    <p style="color:#7f8c8d; font-size:13px; margin-top:8px;"
+                       th:text="'Délai de paiement : ' + ${invoice.customer.delay} + ' jours'"></p>
+                </div>
+            </div>
+
+            <!-- Lignes -->
+            <div class="table-wrapper" style="margin-bottom:20px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Désignation</th>
+                            <th>Catégorie</th>
+                            <th>Prix unitaire HT</th>
+                            <th>Quantité</th>
+                            <th>Montant HT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="row : ${invoice.rows}">
+                            <td th:text="${row.product.designation}"></td>
+                            <td><span class="badge badge-category" th:text="${row.product.category}"></span></td>
+                            <td th:text="${#numbers.formatDecimal(row.product.unitPrice, 1, 2)} + ' €'"></td>
+                            <td th:text="${row.quantity}"></td>
+                            <td th:text="${#numbers.formatDecimal(row.amount(), 1, 2)} + ' €'"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(invoice.rows)}">
+                            <td colspan="5" class="empty-state">Aucune ligne sur cette facture.</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="4" style="text-align:right;">TOTAL HT</td>
+                            <td th:text="${#numbers.formatDecimal(invoice.total(), 1, 2)} + ' €'"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Boutons PDF -->
+            <div class="pdf-actions" style="display:flex; gap:12px; padding-top:20px; border-top:1px solid #f0f2f5;">
+                <a th:href="@{/client/invoices/{id}/pdf(id=${invoice.id})}"
+                   target="_blank" class="btn btn-pdf">👁 Visualiser PDF</a>
+                <a th:href="@{/client/invoices/{id}/pdf/download(id=${invoice.id})}"
+                   class="btn btn-info">⬇ Télécharger PDF</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

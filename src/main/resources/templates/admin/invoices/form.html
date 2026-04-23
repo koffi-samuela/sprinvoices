@@ -1,0 +1,79 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <th:block th:replace="~{fragments/sidebar :: head('Nouvelle facture')}"></th:block>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar('invoices')}"></div>
+
+<div class="main-content" id="mainContent">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <span class="topbar-title">Nouvelle facture</span>
+
+    <div class="topbar-actions">
+      <a th:href="@{/admin/invoices}" class="btn btn-secondary">
+        ← Retour
+      </a>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <div class="card">
+
+      <form th:action="@{/admin/invoices/new}"
+            th:object="${invoice}"
+            method="post">
+
+        <div class="section-title">Informations facture</div>
+
+        <!-- Désignation -->
+        <div class="form-group">
+          <label>Désignation *</label>
+          <input type="text"
+                 th:field="*{designation}"
+                 placeholder="Ex: Facture Janvier 2026"
+                 required/>
+        </div>
+
+        <!-- Client -->
+        <div class="form-group">
+          <label>Client *</label>
+          <select name="customerId" required title="customer">
+            <option value="">-- Sélectionner un client --</option>
+
+            <option th:each="c : ${customers}"
+                    th:value="${c.id}"
+                    th:text="${c.name} + ' — ' + c.corporateName">
+            </option>
+
+          </select>
+        </div>
+
+        <!-- Actions -->
+        <div style="margin-top: 24px; display: flex; gap: 10px;">
+          <button type="submit" class="btn btn-primary">
+            Créer la facture
+          </button>
+
+          <a th:href="@{/admin/invoices}" class="btn btn-secondary">
+            Annuler
+          </a>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>
