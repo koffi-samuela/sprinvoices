@@ -68,7 +68,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="inv : ${invoices.content}">
+                    <tr th:each="inv : ${invoices}">
                         <td>
                             <span class="sv-invoice-number" th:text="${inv.number}"></span>
                         </td>
@@ -103,13 +103,32 @@
                             </div>
                         </td>
                     </tr>
-                    <tr th:if="${#lists.isEmpty(invoices)}">
+                    <tr th:if="${invoices.isEmpty()}">
                         <td colspan="7" class="sv-empty">Aucune facture trouvée.</td>
                     </tr>
                 </tbody>
                 
             </table>
         </div>
+        <div th:if="${invoices.totalPages > 1}"
+     style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:20px;">
+
+    <a th:if="${invoices.number > 0}"
+       th:href="@{/admin/invoices(page=${invoices.number - 1})}"
+       class="btn btn-secondary btn-sm">← Précédent</a>
+
+    <span th:each="i : ${#numbers.sequence(0, invoices.totalPages - 1)}">
+        <a th:href="@{/admin/invoices(page=${i})}"
+           th:text="${i + 1}"
+           th:class="${i == invoices.number} ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm'">
+        </a>
+    </span>
+
+    <a th:if="${invoices.number < invoices.totalPages - 1}"
+       th:href="@{/admin/invoices(page=${invoices.number + 1})}"
+       class="btn btn-secondary btn-sm">Suivant →</a>
+
+</div>
 
     </div>
 </div>

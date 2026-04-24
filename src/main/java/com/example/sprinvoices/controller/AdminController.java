@@ -174,7 +174,7 @@ public String invoices(
         @RequestParam(defaultValue = "0") int page,
         Model model) {
 
-    Pageable pageable = PageRequest.of(page, 10);
+    Pageable pageable = PageRequest.of(page, 1); // 1 facture par page pour tester
 
     Page<Invoice> invoices = invoiceService.findWithFilters(
             customerId,

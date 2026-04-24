@@ -76,7 +76,9 @@
                 </thead>
                 <tbody>
                     <tr th:each="inv : ${invoices}">
-                        <td class="text-muted" th:text="${inv.id}"></td>
+                        <td>
+                            <span class="sv-invoice-number" th:text="${inv.number}"></span>
+                        </td>
                         <td th:text="${inv.designation}"></td>
                         <td class="text-muted"
                             th:text="${#temporals.format(inv.createdAt, 'dd/MM/yyyy')}"></td>
