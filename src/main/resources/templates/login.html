@@ -1,29 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+    <title>Connexion - SprinVoices</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
+            background: #f5f7fb;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
         }
 
         .card {
             background: white;
+            border-radius: 10px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.434);
             padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
         }
 
         .logo {
@@ -32,15 +40,14 @@
         }
 
         .logo h1 {
-            font-size: 24px;
+            font-size: 26px;
             color: #C0392B;
-            font-weight: bold;
+            margin-bottom: 4px;
         }
 
         .logo p {
             color: #7f8c8d;
             font-size: 13px;
-            margin-top: 4px;
         }
 
         .form-group {
@@ -50,23 +57,24 @@
         label {
             display: block;
             font-size: 13px;
-            font-weight: bold;
             color: #2c3e50;
             margin-bottom: 6px;
+            font-weight: 600;
         }
 
         input {
             width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #ddd;
+            padding: 12px 14px;
+            border: 1px solid #e0e0e0;
             border-radius: 6px;
             font-size: 14px;
-            transition: border-color 0.2s;
+            transition: 0.2s;
         }
 
         input:focus {
-            outline: none;
             border-color: #C0392B;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
         }
 
         button {
@@ -79,16 +87,19 @@
             font-size: 15px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 8px;
+            transition: 0.2s;
+            margin-top: 10px;
         }
 
-        button:hover { background: #a93226; }
+        button:hover {
+            background: #a93226;
+        }
 
         .alert {
             padding: 10px 14px;
             border-radius: 6px;
             font-size: 13px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .alert-error {
@@ -102,38 +113,63 @@
             color: #1e8449;
             border: 1px solid #a9dfbf;
         }
+
+        .footer {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 12px;
+            color: #999;
+        }
     </style>
 </head>
+
 <body>
-<div class="card">
-    <div class="logo">
-        <h1>SprinVoices</h1>
-        <p>Module de facturation</p>
-    </div>
 
-    <!-- Message d'erreur si mauvais identifiants -->
-    <div th:if="${param.error}" class="alert alert-error">
-        Identifiants incorrects. Veuillez réessayer.
-    </div>
+<div class="login-container">
 
-    <!-- Message de succès après déconnexion -->
-    <div th:if="${param.logout}" class="alert alert-success">
-        Vous avez été déconnecté avec succès.
-    </div>
+    <div class="card">
 
-    <form method="post" th:action="@{/login}">
-        <div class="form-group">
-            <label for="username">Identifiant</label>
-            <input type="text" id="username" name="username"
-                   placeholder="Votre identifiant" required autofocus/>
+        <!-- Logo -->
+        <div class="logo">
+            <h1>SprinVoices</h1>
+            <p>Module de facturation</p>
         </div>
-        <div class="form-group">
-            <label for="password">Mot de passe</label>
-            <input type="password" id="password" name="password"
-                   placeholder="Votre mot de passe" required/>
+
+        <!-- Messages -->
+        <div th:if="${param.error}" class="alert alert-error">
+            Identifiants incorrects. Veuillez réessayer.
         </div>
-        <button type="submit">Se connecter</button>
-    </form>
+
+        <div th:if="${param.logout}" class="alert alert-success">
+            Vous avez été déconnecté avec succès.
+        </div>
+
+        <!-- Form -->
+        <form method="post" th:action="@{/login}">
+
+            <div class="form-group">
+                <label for="username">Email / Identifiant</label>
+                <input type="text" id="username" name="username"
+                       placeholder="ex: admin@company.com" required autofocus/>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password"
+                       placeholder="••••••••" required/>
+            </div>
+
+            <button type="submit">Se connecter</button>
+
+        </form>
+
+        <div class="footer">
+            © SprinVoices — Tous droits réservés
+        </div>
+
+    </div>
+
 </div>
+
 </body>
 </html>
