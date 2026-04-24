@@ -143,6 +143,9 @@
         <div th:if="${param.logout}" class="alert alert-success">
             Vous avez été déconnecté avec succès.
         </div>
+        <div th:if="${param.resetSuccess}" class="alert alert-success">
+    Mot de passe modifié avec succès. Vous pouvez vous connecter.
+</div>
 
         <!-- Form -->
         <form method="post" th:action="@{/login}">
@@ -160,7 +163,12 @@
             </div>
 
             <button type="submit">Se connecter</button>
-
+            <!-- reset password link -->
+            <div style="text-align:center;margin-top:12px;font-size:13px;">
+            <a th:href="@{/forgot-password}" style="color:#C0392B;text-decoration:none;">
+                Mot de passe oublié ?
+            </a>
+        </div>
         </form>
 
         <div class="footer">

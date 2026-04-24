@@ -250,4 +250,56 @@ private String buildQuoteConvertedEmail(Quote quote) {
             quote.getNumber()
         );
 }
+
+@Async
+public void sendPasswordResetEmail(String to, String resetLink) {
+    String subject = "Réinitialisation de votre mot de passe — SprinVoices";
+    String body = buildPasswordResetEmail(resetLink);
+    sendHtmlEmail(to, subject, body);
+}
+
+private String buildPasswordResetEmail(String resetLink) {
+    return """
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;background:#ffffff;border:1px solid #eee;border-radius:8px;overflow:hidden;">
+
+            <div style="background:#C0392B;padding:24px;">
+                <h1 style="color:white;margin:0;font-size:20px;">SprinVoices</h1>
+                <p style="color:#f5f5f5;margin:4px 0 0;font-size:13px;">Sécurité du compte</p>
+            </div>
+
+            <div style="padding:32px;">
+                <h2 style="color:#2c3e50;margin-top:0;">Réinitialisation du mot de passe</h2>
+
+                <p style="color:#555;font-size:14px;line-height:1.6;">
+                    Vous avez demandé la réinitialisation de votre mot de passe.
+                    Cliquez sur le bouton ci-dessous pour en choisir un nouveau.
+                </p>
+
+                <p style="color:#555;font-size:14px;line-height:1.6;">
+                    Ce lien est valable <strong>30 minutes</strong>.
+                    Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.
+                </p>
+
+                <div style="text-align:center;margin:32px 0;">
+                    <a href="%s"
+                       style="background:#C0392B;color:white;padding:14px 28px;border-radius:6px;
+                              text-decoration:none;font-size:15px;font-weight:bold;">
+                        Réinitialiser mon mot de passe
+                    </a>
+                </div>
+
+                <p style="color:#aaa;font-size:12px;">
+                    Ou copiez ce lien dans votre navigateur :<br>
+                    <span style="color:#C0392B;">%s</span>
+                </p>
+            </div>
+
+            <div style="background:#f8f9fa;padding:14px;text-align:center;">
+                <p style="color:#999;font-size:12px;margin:0;">
+                    SprinVoices — Tous droits réservés
+                </p>
+            </div>
+        </div>
+        """.formatted(resetLink, resetLink);
+}
 }
