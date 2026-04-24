@@ -9,95 +9,174 @@
 <div th:replace="~{fragments/sidebar-client :: sidebar('dashboard')}"></div>
 
 <div class="main-content" id="mainContent">
+
+    <!-- TOPBAR -->
     <div class="topbar">
-        <span class="topbar-title" th:text="'Facture #' + ${invoice.id}"></span>
-        <div class="topbar-actions">
-            <a th:href="@{/client/dashboard}" class="btn btn-secondary btn-sm">← Retour</a>
+        <div class="d-flex align-items-center gap-3">
+            <a th:href="@{/client/dashboard}" class="sv-back-btn">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <span class="topbar-title"
+                  th:text="'Facture ' + ${invoice.number}">
+            </span>
         </div>
     </div>
+
     <div class="page-content">
 
-        <div class="invoice-preview">
+        <!-- HEADER -->
+        <div class="sv-form-card mb-4">
 
-            <!-- En-tête facture -->
-            <div class="invoice-header-block">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+
+                <!-- LOGO / TITLE -->
                 <div>
-                    <div style="font-size:26px; font-weight:bold; color:#2c3e50;">SprinVoices</div>
-                    <div style="color:#7f8c8d; font-size:13px; margin-top:4px;">Module de facturation</div>
-                </div>
-                <div style="text-align:right;">
-                    <div style="font-size:20px; font-weight:bold; color:#2c3e50;">
-                        FACTURE #<span th:text="${invoice.id}"></span>
+                    <div class="sv-form-section-title mb-1">
+                        <i class="bi bi-receipt"></i>
+                        SprinVoices
                     </div>
-                    <div style="font-size:13px; color:#7f8c8d; margin-top:4px;"
+                    <div class="text-muted">Module de facturation</div>
+                </div>
+
+                <!-- FACTURE INFO -->
+                <div class="text-end">
+                    <div class="fw-500" style="font-size:18px;">
+                        FACTURE <span th:text="${invoice.number}"></span>
+                    </div>
+
+                    <div class="text-muted"
                          th:text="${invoice.designation}"></div>
-                    <span th:if="${invoice.paidAt != null}" class="badge badge-paid">PAYÉE</span>
-                    <span th:if="${invoice.paidAt == null and invoice.invoicedAt != null}" class="badge badge-invoiced">FACTURÉE</span>
-                    <span th:if="${invoice.invoicedAt == null}" class="badge badge-created">CRÉÉE</span>
+
+                    <div class="mt-2">
+
+                        <span th:if="${invoice.paidAt != null}"
+                              class="sv-badge sv-badge-paid">Payée</span>
+
+                        <span th:if="${invoice.paidAt == null and invoice.invoicedAt != null}"
+                              class="sv-badge sv-badge-invoiced">Facturée</span>
+
+                        <span th:if="${invoice.invoicedAt == null}"
+                              class="sv-badge sv-badge-created">Créée</span>
+
+                    </div>
                 </div>
+
             </div>
 
-            <!-- Infos client / dates -->
-            <div class="info-grid-2">
-                <div class="info-box">
-                    <div class="info-label">Facturer à</div>
-                    <p th:text="${invoice.customer.name}" style="font-weight:bold;"></p>
-                    <p th:text="${invoice.customer.corporateName}"></p>
-                    <p th:text="${invoice.customer.address}"></p>
-                    <p th:text="${invoice.customer.zipcode} + ' ' + ${invoice.customer.city}"></p>
-                </div>
-                <div class="info-box">
-                    <div class="info-label">Dates</div>
-                    <p th:text="'Créée le : ' + ${#temporals.format(invoice.createdAt, 'dd/MM/yyyy')}"></p>
-                    <p th:if="${invoice.invoicedAt != null}"
-                       th:text="'Facturée le : ' + ${#temporals.format(invoice.invoicedAt, 'dd/MM/yyyy')}"></p>
-                    <p th:if="${invoice.paidAt != null}"
-                       th:text="'Payée le : ' + ${#temporals.format(invoice.paidAt, 'dd/MM/yyyy')}"></p>
-                    <p style="color:#7f8c8d; font-size:13px; margin-top:8px;"
-                       th:text="'Délai de paiement : ' + ${invoice.customer.delay} + ' jours'"></p>
-                </div>
-            </div>
+            <!-- INFOS -->
+            <div class="row g-3">
 
-            <!-- Lignes -->
-            <div class="table-wrapper" style="margin-bottom:20px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Désignation</th>
-                            <th>Catégorie</th>
-                            <th>Prix unitaire HT</th>
-                            <th>Quantité</th>
-                            <th>Montant HT</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="row : ${invoice.rows}">
-                            <td th:text="${row.product.designation}"></td>
-                            <td><span class="badge badge-category" th:text="${row.product.category}"></span></td>
-                            <td th:text="${#numbers.formatDecimal(row.product.unitPrice, 1, 2)} + ' €'"></td>
-                            <td th:text="${row.quantity}"></td>
-                            <td th:text="${#numbers.formatDecimal(row.amount(), 1, 2)} + ' €'"></td>
-                        </tr>
-                        <tr th:if="${#lists.isEmpty(invoice.rows)}">
-                            <td colspan="5" class="empty-state">Aucune ligne sur cette facture.</td>
-                        </tr>
-                        <tr class="total-row">
-                            <td colspan="4" style="text-align:right;">TOTAL HT</td>
-                            <td th:text="${#numbers.formatDecimal(invoice.total(), 1, 2)} + ' €'"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <!-- CLIENT -->
+                <div class="col-md-6">
+                    <div class="sv-info-box">
+                        <div class="sv-info-label">Facturer à</div>
 
-            <!-- Boutons PDF -->
-            <div class="pdf-actions" style="display:flex; gap:12px; padding-top:20px; border-top:1px solid #f0f2f5;">
-                <a th:href="@{/client/invoices/{id}/pdf(id=${invoice.id})}"
-                   target="_blank" class="btn btn-pdf">👁 Visualiser PDF</a>
-                <a th:href="@{/client/invoices/{id}/pdf/download(id=${invoice.id})}"
-                   class="btn btn-info">⬇ Télécharger PDF</a>
+                        <div class="fw-500" th:text="${invoice.customer.name}"></div>
+                        <div class="text-muted" th:text="${invoice.customer.corporateName}"></div>
+                        <div class="text-muted" th:text="${invoice.customer.address}"></div>
+                        <div class="text-muted"
+                             th:text="${invoice.customer.zipcode} + ' ' + ${invoice.customer.city}"></div>
+                    </div>
+                </div>
+
+                <!-- DATES -->
+                <div class="col-md-6">
+                    <div class="sv-info-box">
+
+                        <div class="sv-info-label">Informations</div>
+
+                        <div>
+                            Créée le :
+                            <span th:text="${#temporals.format(invoice.createdAt, 'dd/MM/yyyy')}"></span>
+                        </div>
+
+                        <div th:if="${invoice.invoicedAt != null}">
+                            Facturée le :
+                            <span th:text="${#temporals.format(invoice.invoicedAt, 'dd/MM/yyyy')}"></span>
+                        </div>
+
+                        <div th:if="${invoice.paidAt != null}">
+                            Payée le :
+                            <span th:text="${#temporals.format(invoice.paidAt, 'dd/MM/yyyy')}"></span>
+                        </div>
+
+                        <div class="text-muted mt-2">
+                            Délai : <span th:text="${invoice.customer.delay}"></span> jours
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
 
         </div>
+
+        <!-- TABLE -->
+        <div class="sv-table-card">
+
+            <table class="table sv-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Désignation</th>
+                        <th>Catégorie</th>
+                        <th>Prix HT</th>
+                        <th>Qté</th>
+                        <th>Montant</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr th:each="row : ${invoice.rows}">
+                        <td class="fw-500" th:text="${row.product.designation}"></td>
+
+                        <td>
+                            <span class="sv-badge sv-badge-created"
+                                  th:text="${row.product.category}"></span>
+                        </td>
+
+                        <td th:text="${#numbers.formatDecimal(row.product.unitPrice,1,2)} + ' €'"></td>
+
+                        <td th:text="${row.quantity}"></td>
+
+                        <td class="fw-500"
+                            th:text="${#numbers.formatDecimal(row.amount(),1,2)} + ' €'"></td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(invoice.rows)}">
+                        <td colspan="5" class="sv-empty">
+                            Aucune ligne sur cette facture.
+                        </td>
+                    </tr>
+
+                    <!-- TOTAL -->
+                    <tr>
+                        <td colspan="4" class="text-end fw-500">TOTAL HT</td>
+                        <td class="fw-500"
+                            th:text="${#numbers.formatDecimal(invoice.total(),1,2)} + ' €'"></td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="sv-form-actions mt-4">
+
+            <a th:href="@{/client/invoices/{id}/pdf(id=${invoice.id})}"
+               target="_blank"
+               class="sv-btn sv-btn-secondary">
+                <i class="bi bi-eye"></i> Voir PDF
+            </a>
+
+            <a th:href="@{/client/invoices/{id}/pdf/download(id=${invoice.id})}"
+               class="sv-btn sv-btn-primary">
+                <i class="bi bi-download"></i> Télécharger
+            </a>
+
+        </div>
+
     </div>
 </div>
 

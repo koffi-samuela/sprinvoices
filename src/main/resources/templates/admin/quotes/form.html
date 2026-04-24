@@ -9,36 +9,59 @@
 <div th:replace="~{fragments/sidebar :: sidebar('quotes')}"></div>
 
 <div class="main-content" id="mainContent">
+
     <div class="topbar">
-        <span class="topbar-title">Nouveau devis</span>
-        <div class="topbar-actions">
-            <a th:href="@{/admin/quotes}" class="btn btn-secondary btn-sm">← Retour</a>
+        <div class="d-flex align-items-center gap-3">
+            <a th:href="@{/admin/quotes}" class="sv-back-btn">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <span class="topbar-title">Nouveau devis</span>
         </div>
     </div>
+
     <div class="page-content">
-        <div class="card" style="max-width:600px;">
-            <form th:action="@{/admin/quotes/new}" method="post">
-                <div class="form-group">
-                    <label>Désignation *</label>
-                    <input type="text" name="designation" placeholder="Ex: Devis développement site web" required/>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+
+                <div class="sv-form-card">
+
+                    <form th:action="@{/admin/quotes/new}" method="post">
+
+                        <div class="sv-form-group">
+                            <label>Désignation <span class="sv-required">*</span></label>
+                            <input type="text" name="designation"
+                                   placeholder="Ex: Création site web"
+                                   class="sv-input" required>
+                        </div>
+
+                        <div class="sv-form-group">
+                            <label>Client <span class="sv-required">*</span></label>
+                            <select name="customerId" class="sv-select" required title="customer">
+                                <option value="">-- Sélectionner --</option>
+                                <option th:each="c : ${customers}"
+                                        th:value="${c.id}"
+                                        th:text="${c.name} + ' — ' + ${c.corporateName}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="sv-form-actions mt-4">
+                            <button class="sv-btn sv-btn-primary">
+                                <i class="bi bi-check-lg"></i> Créer
+                            </button>
+                            <a th:href="@{/admin/quotes}" class="sv-btn sv-btn-ghost">
+                                Annuler
+                            </a>
+                        </div>
+
+                    </form>
+
                 </div>
-                <div class="form-group">
-                    <label>Client *</label>
-                    <select name="customerId" required title="customer">
-                        <option value="">-- Sélectionner un client --</option>
-                        <option th:each="c : ${customers}"
-                                th:value="${c.id}"
-                                th:text="${c.name} + ' — ' + ${c.corporateName}">
-                        </option>
-                    </select>
-                </div>
-                <div style="margin-top:24px;">
-                    <button type="submit" class="btn btn-primary">Créer le devis</button>
-                    <a th:href="@{/admin/quotes}" class="btn btn-secondary" style="margin-left:10px;">Annuler</a>
-                </div>
-            </form>
+
+            </div>
         </div>
     </div>
+
 </div>
 
 </body>

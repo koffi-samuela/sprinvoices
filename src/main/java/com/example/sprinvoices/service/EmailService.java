@@ -1,6 +1,8 @@
 package com.example.sprinvoices.service;
 
 import com.example.sprinvoices.models.Invoice;
+import com.example.sprinvoices.models.Quote;
+
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -57,55 +59,90 @@ private void sendHtmlEmailWithPdf(String to, String subject, String htmlBody, In
     }
 }
 
-    private String buildInvoicedEmail(Invoice invoice) {
-        return """
-            <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
-                <div style="background:#C0392B;padding:24px;border-radius:8px 8px 0 0;">
-                    <h1 style="color:white;margin:0;font-size:22px;">SprinVoices</h1>
-                </div>
-                <div style="background:white;padding:32px;border:1px solid #eee;">
-                    <h2 style="color:#2c3e50;">Votre facture est disponible</h2>
-                    <p style="color:#555;">Bonjour <strong>%s</strong>,</p>
-                    <p style="color:#555;">Votre facture <strong>%s</strong> d'un montant de <strong>%.2f €</strong> HT est disponible.</p>
-                    <div style="background:#f8f9fa;padding:16px;border-radius:6px;margin:24px 0;">
-                        <p style="margin:0;color:#555;">Délai de paiement : <strong>%d jours</strong></p>
-                    </div>
-                    <p style="color:#555;">Connectez-vous à votre espace client pour la consulter.</p>
-                </div>
-                <div style="background:#f8f9fa;padding:16px;text-align:center;border-radius:0 0 8px 8px;">
-                    <p style="color:#999;font-size:12px;margin:0;">SprinVoices — Module de facturation</p>
-                </div>
-            </div>
-            """.formatted(
-                invoice.getCustomer().getName(),
-                invoice.getNumber(),
-                invoice.total(),
-                invoice.getCustomer().getDelay()
-            );
-    }
+private String buildInvoicedEmail(Invoice invoice) {
+    return """
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;background:#ffffff;border:1px solid #eee;border-radius:8px;overflow:hidden;">
 
-    private String buildPaidEmail(Invoice invoice) {
-        return """
-            <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
-                <div style="background:#27ae60;padding:24px;border-radius:8px 8px 0 0;">
-                    <h1 style="color:white;margin:0;font-size:22px;">SprinVoices</h1>
-                </div>
-                <div style="background:white;padding:32px;border:1px solid #eee;">
-                    <h2 style="color:#2c3e50;">✅ Paiement confirmé</h2>
-                    <p style="color:#555;">Bonjour <strong>%s</strong>,</p>
-                    <p style="color:#555;">Nous confirmons la réception du paiement de votre facture <strong>%s</strong> d'un montant de <strong>%.2f €</strong> HT.</p>
-                    <p style="color:#555;">Merci pour votre règlement.</p>
-                </div>
-                <div style="background:#f8f9fa;padding:16px;text-align:center;border-radius:0 0 8px 8px;">
-                    <p style="color:#999;font-size:12px;margin:0;">SprinVoices — Module de facturation</p>
-                </div>
+            <div style="background:#C0392B;padding:24px;">
+                <h1 style="color:white;margin:0;font-size:20px;">SprinVoices</h1>
+                <p style="color:#f5f5f5;margin:4px 0 0;font-size:13px;">Facturation & gestion financière</p>
             </div>
-            """.formatted(
-                invoice.getCustomer().getName(),
-                invoice.getNumber(),
-                invoice.total()
-            );
-    }
+
+            <div style="padding:32px;">
+                <h2 style="color:#2c3e50;margin-top:0;">Votre facture est disponible</h2>
+
+                <p style="color:#555;font-size:14px;">
+                    Bonjour <strong>%s</strong>,
+                </p>
+
+                <p style="color:#555;font-size:14px;line-height:1.6;">
+                    Votre facture <strong>%s</strong> d’un montant de
+                    <strong>%.2f € HT</strong> est désormais disponible dans votre espace client.
+                </p>
+
+                <div style="background:#f8f9fa;padding:16px;border-radius:6px;margin:24px 0;">
+                    <p style="margin:0;color:#555;font-size:14px;">
+                        Délai de paiement : <strong>%d jours</strong>
+                    </p>
+                </div>
+
+                <p style="color:#777;font-size:13px;">
+                    Vous pouvez consulter et télécharger votre facture depuis votre espace client.
+                </p>
+            </div>
+
+            <div style="background:#f8f9fa;padding:14px;text-align:center;">
+                <p style="color:#999;font-size:12px;margin:0;">
+                    SprinVoices — Tous droits réservés
+                </p>
+            </div>
+        </div>
+        """.formatted(
+            invoice.getCustomer().getName(),
+            invoice.getNumber(),
+            invoice.total(),
+            invoice.getCustomer().getDelay()
+        );
+}
+
+private String buildPaidEmail(Invoice invoice) {
+    return """
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;background:#ffffff;border:1px solid #eee;border-radius:8px;overflow:hidden;">
+
+            <div style="background:#27ae60;padding:24px;">
+                <h1 style="color:white;margin:0;font-size:20px;">SprinVoices</h1>
+                <p style="color:#eafaf1;margin:4px 0 0;font-size:13px;">Confirmation de paiement</p>
+            </div>
+
+            <div style="padding:32px;">
+                <h2 style="color:#2c3e50;margin-top:0;">Paiement confirmé</h2>
+
+                <p style="color:#555;font-size:14px;">
+                    Bonjour <strong>%s</strong>,
+                </p>
+
+                <p style="color:#555;font-size:14px;line-height:1.6;">
+                    Nous confirmons la réception du paiement de votre facture
+                    <strong>%s</strong> d’un montant de <strong>%.2f € HT</strong>.
+                </p>
+
+                <p style="color:#555;font-size:14px;">
+                    Merci pour votre règlement.
+                </p>
+            </div>
+
+            <div style="background:#f8f9fa;padding:14px;text-align:center;">
+                <p style="color:#999;font-size:12px;margin:0;">
+                    SprinVoices — Tous droits réservés
+                </p>
+            </div>
+        </div>
+        """.formatted(
+            invoice.getCustomer().getName(),
+            invoice.getNumber(),
+            invoice.total()
+        );
+}
     
     // ── Devis ────────────────────────────────────────────────────
 @Async
@@ -138,22 +175,36 @@ private void sendHtmlEmail(String to, String subject, String htmlBody) {
     }
 }
 
-private String buildQuoteSentEmail(com.example.sprinvoices.models.Quote quote) {
+private String buildQuoteSentEmail(Quote quote) {
     return """
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
-            <div style="background:#8e44ad;padding:24px;border-radius:8px 8px 0 0;">
-                <h1 style="color:white;margin:0;font-size:22px;">SprinVoices</h1>
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;background:#ffffff;border:1px solid #eee;border-radius:8px;overflow:hidden;">
+
+            <div style="background:#8e44ad;padding:24px;">
+                <h1 style="color:white;margin:0;font-size:20px;">SprinVoices</h1>
+                <p style="color:#f3eaff;margin:4px 0 0;font-size:13px;">Proposition commerciale</p>
             </div>
-            <div style="background:white;padding:32px;border:1px solid #eee;">
-                <h2 style="color:#2c3e50;">📋 Votre devis est disponible</h2>
-                <p style="color:#555;">Bonjour <strong>%s</strong>,</p>
-                <p style="color:#555;">Votre devis <strong>%s</strong> d'un montant de <strong>%.2f €</strong> HT est disponible.</p>
-                <div style="background:#f8f9fa;padding:16px;border-radius:6px;margin:24px 0;">
-                    <p style="margin:0;color:#555;">Connectez-vous à votre espace client pour le consulter et l'accepter ou le refuser.</p>
-                </div>
+
+            <div style="padding:32px;">
+                <h2 style="color:#2c3e50;margin-top:0;">Votre devis est disponible</h2>
+
+                <p style="color:#555;font-size:14px;">
+                    Bonjour <strong>%s</strong>,
+                </p>
+
+                <p style="color:#555;font-size:14px;line-height:1.6;">
+                    Votre devis <strong>%s</strong> d’un montant de
+                    <strong>%.2f € HT</strong> est disponible dans votre espace client.
+                </p>
+
+                <p style="color:#777;font-size:13px;margin-top:16px;">
+                    Vous pouvez le consulter, l’accepter ou le refuser directement depuis votre espace.
+                </p>
             </div>
-            <div style="background:#f8f9fa;padding:16px;text-align:center;border-radius:0 0 8px 8px;">
-                <p style="color:#999;font-size:12px;margin:0;">SprinVoices — Module de facturation</p>
+
+            <div style="background:#f8f9fa;padding:14px;text-align:center;">
+                <p style="color:#999;font-size:12px;margin:0;">
+                    SprinVoices — Tous droits réservés
+                </p>
             </div>
         </div>
         """.formatted(
@@ -163,20 +214,35 @@ private String buildQuoteSentEmail(com.example.sprinvoices.models.Quote quote) {
         );
 }
 
-private String buildQuoteConvertedEmail(com.example.sprinvoices.models.Quote quote) {
+private String buildQuoteConvertedEmail(Quote quote) {
     return """
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
-            <div style="background:#2980b9;padding:24px;border-radius:8px 8px 0 0;">
-                <h1 style="color:white;margin:0;font-size:22px;">SprinVoices</h1>
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;background:#ffffff;border:1px solid #eee;border-radius:8px;overflow:hidden;">
+
+            <div style="background:#2980b9;padding:24px;">
+                <h1 style="color:white;margin:0;font-size:20px;">SprinVoices</h1>
+                <p style="color:#d6eaf8;margin:4px 0 0;font-size:13px;">Transformation devis → facture</p>
             </div>
-            <div style="background:white;padding:32px;border:1px solid #eee;">
-                <h2 style="color:#2c3e50;">🧾 Votre devis a été converti en facture</h2>
-                <p style="color:#555;">Bonjour <strong>%s</strong>,</p>
-                <p style="color:#555;">Votre devis <strong>%s</strong> a été accepté et converti en facture.</p>
-                <p style="color:#555;">Connectez-vous à votre espace client pour consulter votre facture.</p>
+
+            <div style="padding:32px;">
+                <h2 style="color:#2c3e50;margin-top:0;">Devis converti en facture</h2>
+
+                <p style="color:#555;font-size:14px;">
+                    Bonjour <strong>%s</strong>,
+                </p>
+
+                <p style="color:#555;font-size:14px;line-height:1.6;">
+                    Votre devis <strong>%s</strong> a été accepté et transformé en facture.
+                </p>
+
+                <p style="color:#777;font-size:13px;">
+                    Vous pouvez retrouver votre facture dans votre espace client.
+                </p>
             </div>
-            <div style="background:#f8f9fa;padding:16px;text-align:center;border-radius:0 0 8px 8px;">
-                <p style="color:#999;font-size:12px;margin:0;">SprinVoices — Module de facturation</p>
+
+            <div style="background:#f8f9fa;padding:14px;text-align:center;">
+                <p style="color:#999;font-size:12px;margin:0;">
+                    SprinVoices — Tous droits réservés
+                </p>
             </div>
         </div>
         """.formatted(

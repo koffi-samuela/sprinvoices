@@ -9,12 +9,19 @@
 <div th:replace="~{fragments/sidebar-client :: sidebar('quotes')}"></div>
 
 <div class="main-content" id="mainContent">
+
+    <!-- TOPBAR -->
     <div class="topbar">
         <span class="topbar-title">Mes devis</span>
     </div>
+
     <div class="page-content">
-        <div class="table-wrapper">
-            <table>
+
+        <!-- TABLE -->
+        <div class="sv-table-card">
+
+            <table class="table sv-table mb-0">
+
                 <thead>
                     <tr>
                         <th>Numéro</th>
@@ -25,29 +32,75 @@
                         <th></th>
                     </tr>
                 </thead>
+
                 <tbody>
+
                     <tr th:each="q : ${quotes}">
-                        <td style="font-weight:600;color:#8e44ad;" th:text="${q.number}"></td>
+
+                        <!-- NUMBER -->
+                        <td class="fw-500" style="color:#8e44ad;" th:text="${q.number}"></td>
+
+                        <!-- DESIGNATION -->
                         <td th:text="${q.designation}"></td>
-                        <td th:text="${#temporals.format(q.createdAt, 'dd/MM/yyyy')}"></td>
+
+                        <!-- DATE -->
+                        <td class="text-muted"
+                            th:text="${#temporals.format(q.createdAt, 'dd/MM/yyyy')}"></td>
+
+                        <!-- STATUS -->
                         <td>
-                            <span th:if="${q.status == 'DRAFT'}"    class="badge" style="background:#f0f0f0;color:#666;">BROUILLON</span>
-                            <span th:if="${q.status == 'SENT'}"     class="badge badge-invoiced">EN ATTENTE</span>
-                            <span th:if="${q.status == 'ACCEPTED'}" class="badge badge-paid">ACCEPTÉ</span>
-                            <span th:if="${q.status == 'REFUSED'}"  class="badge" style="background:#fdecea;color:#c0392b;">REFUSÉ</span>
+
+                            <span th:if="${q.status == 'DRAFT'}"
+                                  class="sv-badge sv-badge-created">
+                                Brouillon
+                            </span>
+
+                            <span th:if="${q.status == 'SENT'}"
+                                  class="sv-badge sv-badge-invoiced">
+                                En attente
+                            </span>
+
+                            <span th:if="${q.status == 'ACCEPTED'}"
+                                  class="sv-badge sv-badge-paid">
+                                Accepté
+                            </span>
+
+                            <span th:if="${q.status == 'REFUSED'}"
+                                  class="sv-badge sv-badge-danger">
+                                Refusé
+                            </span>
+
                         </td>
-                        <td th:text="${#numbers.formatDecimal(q.total(), 1, 2)} + ' €'"></td>
+
+                        <!-- TOTAL -->
+                        <td class="fw-500"
+                            th:text="${#numbers.formatDecimal(q.total(), 1, 2)} + ' €'">
+                        </td>
+
+                        <!-- ACTION -->
                         <td>
-                            <a th:href="@{/client/quotes/{id}(id=${q.id})}" class="btn btn-info btn-sm">Voir</a>
+                            <a th:href="@{/client/quotes/{id}(id=${q.id})}"
+                               class="sv-btn sv-btn-secondary sv-btn-sm">
+                                Voir
+                            </a>
                         </td>
+
                     </tr>
+
                     <tr th:if="${#lists.isEmpty(quotes)}">
-                        <td colspan="6" class="empty-state">Aucun devis pour le moment.</td>
+                        <td colspan="6" class="sv-empty">
+                            Aucun devis pour le moment.
+                        </td>
                     </tr>
+
                 </tbody>
+
             </table>
+
         </div>
+
     </div>
+
 </div>
 
 </body>
