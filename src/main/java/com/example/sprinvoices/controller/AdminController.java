@@ -5,6 +5,7 @@ import com.example.sprinvoices.models.Invoice;
 import com.example.sprinvoices.models.Product;
 import com.example.sprinvoices.models.Quote;
 import com.example.sprinvoices.service.CustomerService;
+import com.example.sprinvoices.service.EmailService;
 import com.example.sprinvoices.service.InvoiceService;
 import com.example.sprinvoices.service.ProductService;
 import com.example.sprinvoices.service.QuoteService;
@@ -29,6 +30,7 @@ public class AdminController {
     @Autowired private ProductService productService;
     @Autowired private InvoiceService invoiceService;
     @Autowired private QuoteService quoteService;
+    @Autowired private EmailService emailService;
 
     // ── Dashboard ────────────────────────────────────────────
 @GetMapping("/dashboard")
@@ -215,7 +217,15 @@ public String invoices(
         model.addAttribute("products", productService.findAll());
         return "admin/invoices/detail";
     }
-
+@PostMapping("/invoices/{id}/send-email")
+public String sendInvoiceEmail(@PathVariable Long id,
+                                RedirectAttributes redirectAttributes) {
+    Invoice invoice = invoiceService.findById(id);
+    emailService.sendInvoicedNotification(invoice);
+    redirectAttributes.addFlashAttribute("successMessage",
+            "Facture envoyée à " + invoice.getCustomer().getName());
+    return "redirect:/admin/invoices/" + id;
+}
     @PostMapping("/invoices/{id}/add-row")
     public String addRow(@PathVariable Long id,
                           @RequestParam Long productId,

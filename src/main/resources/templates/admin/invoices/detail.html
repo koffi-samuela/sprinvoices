@@ -32,11 +32,21 @@
                class="sv-btn sv-btn-secondary">
                 <i class="bi bi-download"></i> Télécharger
             </a>
+            <form th:action="@{/admin/invoices/{id}/send-email(id=${invoice.id})}"
+          method="post" style="display:inline;">
+        <button type="submit" class="sv-btn sv-btn-primary">
+            <i class="bi bi-envelope"></i> Envoyer au client
+        </button>
+    </form>
         </div>
     </div>
 
     <div class="page-content">
-
+        <div th:if="${successMessage}" class="alert alert-success"
+     style="margin-bottom:16px;">
+    <i class="bi bi-check-circle"></i>
+    <span th:text="${successMessage}"></span>
+</div>
         <!-- Infos générales -->
         <div class="sv-detail-card mb-4">
             <div class="sv-detail-header">

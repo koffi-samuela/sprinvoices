@@ -75,7 +75,7 @@
                         <td th:text="${inv.designation}"></td>
                         <td th:text="${inv.customer.name}"></td>
                         <td class="text-muted"
-                            th:text="${#temporals.format(inv.createdAt, 'dd/MM/yyyy')}"></td>
+                            th:text="${#temporals.format(inv.createdAt, 'dd/MM/yyyy à HH:mm')}"></td>
                         <td>
                             <span th:if="${inv.paidAt != null}"
                                   class="sv-badge sv-badge-paid">Payée</span>

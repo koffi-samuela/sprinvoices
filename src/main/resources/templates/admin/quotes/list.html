@@ -45,7 +45,7 @@
                     <td th:text="${q.customer.name}"></td>
 
                     <td class="text-muted"
-                        th:text="${#temporals.format(q.createdAt, 'dd/MM/yyyy')}"></td>
+                        th:text="${#temporals.format(q.createdAt, 'dd/MM/yyyy à HH:mm')}"></td>
 
                     <td>
                         <span th:if="${q.status == 'DRAFT'}" class="sv-badge sv-badge-created">Brouillon</span>
