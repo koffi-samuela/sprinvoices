@@ -116,7 +116,7 @@ INSERT INTO ROLE (name) VALUES ('ROLE_CLIENT');
 -- Utilisateur admin par défaut (mot de passe : "admin123" hashé en BCrypt)
 -- Hash généré pour : admin123
 INSERT INTO USER_ACCOUNT (username, password, enabled, role_id)
-VALUES ('admin', '$2a$10$7QIuBfLrEpEOQaFG/4MRuO4z7gBiMcLeBn7iFoK0tNGWDq5GdPsde', 1,
+VALUES ('admin', '$2a$12$g.AZcUxKcLJOwFTt8gKTHO9rHCG4mRFyRSjZCo1.WUVYRE5M3zDyu', 1,
         (SELECT id FROM ROLE WHERE name = 'ROLE_ADMIN'));
 
 -- Quelques produits de démonstration
