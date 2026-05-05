@@ -69,13 +69,13 @@ public void downloadPdfClient(@PathVariable Long id, HttpServletResponse respons
 
 private void generatePdf(Long id, HttpServletResponse response, boolean download)
         throws IOException, DocumentException {
-    Invoice invoice = invoiceService.findById(id);  // ← récupère ici
+    Invoice invoice = invoiceService.findById(id); 
     response.setContentType("application/pdf");
     String disposition = download ? "attachment" : "inline";
     response.setHeader("Content-Disposition",
         disposition + "; filename=" + invoice.getNumber() + ".pdf");
     try {
-        byte[] pdfBytes = pdfService.generatePdfBytes(invoice);  // ← passe l'objet
+        byte[] pdfBytes = pdfService.generatePdfBytes(invoice);
         response.getOutputStream().write(pdfBytes);
     } catch (Exception e) {
         throw new IOException("Erreur génération PDF", e);
